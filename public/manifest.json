@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+
+  "name": "Voice Mate GPT",
+  "description": "Enhance your OpenAI chat experience with this TypeScript-developed plugin for intuitive and advanced voice interactions.",
+  "version": "1.0",
+
+  "action": {
+    "default_icon": {
+      "16": "icon.png",
+      "24": "icon.png",
+      "32": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    },
+    "default_popup": "popup.html"
+  },
+
+  "icons": {
+    "16": "icon.png",
+    "24": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://chat.openai.com/*"],
+      "js": ["js/vendor.js", "js/content_script.js"]
+    }
+  ],
+
+  "background": {
+    "service_worker": "js/background.js"
+  },
+
+  "permissions": ["storage", "webRequest", "offscreen"],
+  "host_permissions": ["https://chat.openai.com/*"]
+}

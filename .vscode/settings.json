@@ -1,0 +1,31 @@
+{
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "files.eol": "\n",
+  "json.schemas": [
+    {
+      "fileMatch": ["/manifest.json"],
+      "url": "http://json.schemastore.org/chrome-manifest"
+    }
+  ],
+  "cSpell.words": ["elevenlabs", "Reseta", "ttgpt", "TTGPT"],
+  "cSpell.ignorePaths": [
+    "package-lock.json",
+    "node_modules",
+    "vscode-extension",
+    ".git/objects",
+    ".vscode",
+    ".vscode-insiders",
+    "src/config/speechRecognitionLanguages.config.ts"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.rulers": [100],
+  "editor.wordWrapColumn": 100,
+  "editor.wordWrap": "wordWrapColumn",
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"]
+}
