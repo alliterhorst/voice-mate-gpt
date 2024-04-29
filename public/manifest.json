@@ -27,7 +27,7 @@
   "content_scripts": [
     {
       "matches": ["https://chat.openai.com/*"],
-      "js": ["js/vendor.js", "js/content_script.js"]
+      "js": ["js/vendor.js", "font-awesome.min.js", "js/content_script.js"]
     }
   ],
 
