@@ -9,7 +9,7 @@ type Position = {
   top: number;
 };
 
-const MenuPlayerComponent = () => {
+const MenuPlayerComponent: React.FC = () => {
   const {
     hasPlayerStarted,
     setHasPlayerStarted,
