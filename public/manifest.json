@@ -26,7 +26,7 @@
 
   "content_scripts": [
     {
-      "matches": ["https://chat.openai.com/*"],
+      "matches": ["https://chat.openai.com/*", "https://chatgpt.com/*"],
       "js": ["js/vendor.js", "font-awesome.min.js", "js/content_script.js"]
     }
   ],
@@ -36,5 +36,5 @@
   },
 
   "permissions": ["storage", "webRequest", "offscreen"],
-  "host_permissions": ["https://chat.openai.com/*"]
+  "host_permissions": ["https://chat.openai.com/*", "https://chatgpt.com/*"]
 }

@@ -4,7 +4,7 @@
   "description": "Voice Mate GPT: Enhance your OpenAI chat experience with this TypeScript-developed plugin for intuitive and advanced voice interactions.",
   "main": "index.js",
   "scripts": {
-    "start": "webpack serve --config webpack/webpack.dev.js",
+    "start": "webpack serve --config webpack/webpack.test-page.js",
     "watch": "webpack --config webpack/webpack.dev.js --watch",
     "build": "webpack --config webpack/webpack.prod.js",
     "clean": "rimraf dist",
@@ -23,15 +23,15 @@
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "jwt-decode": "^4.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "styled-components": "^6.1.8"
   },
   "devDependencies": {
     "@types/chrome": "0.0.158",
     "@types/jest": "^29.5.0",
-    "@types/react": "^18.0.29",
-    "@types/react-dom": "^18.0.11",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
     "copy-webpack-plugin": "^9.0.1",
     "glob": "^7.1.6",
     "html-webpack-plugin": "^5.6.0",
