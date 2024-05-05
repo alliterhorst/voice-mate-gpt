@@ -1,20 +1,25 @@
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
-const WebpackExtReloader = require('webpack-ext-reloader');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const srcDir = path.join(__dirname, '..', 'src');
 
 module.exports = merge(common, {
-  devtool: 'inline-source-map',
   mode: 'development',
-  watch: true,
+  devtool: 'inline-source-map',
+  entry: {
+    app: path.join(srcDir, 'app.tsx'),
+  },
   plugins: [
-    new WebpackExtReloader({
-      port: 9129,
-      reloadPage: true,
-      entries: {
-        contentScript: 'content_script',
-        background: 'background',
-        extensionPage: ['popup', 'options'],
-      },
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, '..', 'src', 'index.html'),
+      filename: 'index.html',
+      chunks: ['app'],
     }),
   ],
+  devServer: {
+    static: path.join(__dirname, '../dist'),
+    compress: true,
+    port: 9000,
+  },
 });
