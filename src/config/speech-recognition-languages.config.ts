@@ -1,112 +1,453 @@
-type Language = [string, ...string[][]];
+import { LanguageInterface } from '../interface/language.interface';
 
-export const SPEECH_RECOGNITION_LANGUAGES: Language[] = [
-  ["Afrikaans", ["af-ZA"]],
-  ["አማርኛ", ["am-ET"]],
-  ["Azərbaycanca", ["az-AZ"]],
-  ["বাংলা", ["bn-BD", "বাংলাদেশ"], ["bn-IN", "ভারত"]],
-  ["Bahasa Indonesia", ["id-ID"]],
-  ["Bahasa Melayu", ["ms-MY"]],
-  ["Català", ["ca-ES"]],
-  ["Čeština", ["cs-CZ"]],
-  ["Dansk", ["da-DK"]],
-  ["Deutsch", ["de-DE"]],
-  [
-    "English",
-    ["en-AU", "Australia"],
-    ["en-CA", "Canada"],
-    ["en-IN", "India"],
-    ["en-KE", "Kenya"],
-    ["en-TZ", "Tanzania"],
-    ["en-GH", "Ghana"],
-    ["en-NZ", "New Zealand"],
-    ["en-NG", "Nigeria"],
-    ["en-ZA", "South Africa"],
-    ["en-PH", "Philippines"],
-    ["en-GB", "United Kingdom"],
-    ["en-US", "United States"],
-  ],
-  [
-    "Español",
-    ["es-AR", "Argentina"],
-    ["es-BO", "Bolivia"],
-    ["es-CL", "Chile"],
-    ["es-CO", "Colombia"],
-    ["es-CR", "Costa Rica"],
-    ["es-EC", "Ecuador"],
-    ["es-SV", "El Salvador"],
-    ["es-ES", "España"],
-    ["es-US", "Estados Unidos"],
-    ["es-GT", "Guatemala"],
-    ["es-HN", "Honduras"],
-    ["es-MX", "México"],
-    ["es-NI", "Nicaragua"],
-    ["es-PA", "Panamá"],
-    ["es-PY", "Paraguay"],
-    ["es-PE", "Perú"],
-    ["es-PR", "Puerto Rico"],
-    ["es-DO", "República Dominicana"],
-    ["es-UY", "Uruguay"],
-    ["es-VE", "Venezuela"],
-  ],
-  ["Euskara", ["eu-ES"]],
-  ["Filipino", ["fil-PH"]],
-  ["Français", ["fr-FR"]],
-  ["Basa Jawa", ["jv-ID"]],
-  ["Galego", ["gl-ES"]],
-  ["ગુજરાતી", ["gu-IN"]],
-  ["Hrvatski", ["hr-HR"]],
-  ["IsiZulu", ["zu-ZA"]],
-  ["Íslenska", ["is-IS"]],
-  ["Italiano", ["it-IT", "Italia"], ["it-CH", "Svizzera"]],
-  ["ಕನ್ನಡ", ["kn-IN"]],
-  ["ភាសាខ្មែរ", ["km-KH"]],
-  ["Latviešu", ["lv-LV"]],
-  ["Lietuvių", ["lt-LT"]],
-  ["മലയാളം", ["ml-IN"]],
-  ["मराठी", ["mr-IN"]],
-  ["Magyar", ["hu-HU"]],
-  ["ລາວ", ["lo-LA"]],
-  ["Nederlands", ["nl-NL"]],
-  ["नेपाली भाषा", ["ne-NP"]],
-  ["Norsk bokmål", ["nb-NO"]],
-  ["Polski", ["pl-PL"]],
-  ["Português", ["pt-BR", "Brasil"], ["pt-PT", "Portugal"]],
-  ["Română", ["ro-RO"]],
-  ["සිංහල", ["si-LK"]],
-  ["Slovenščina", ["sl-SI"]],
-  ["Basa Sunda", ["su-ID"]],
-  ["Slovenčina", ["sk-SK"]],
-  ["Suomi", ["fi-FI"]],
-  ["Svenska", ["sv-SE"]],
-  ["Kiswahili", ["sw-TZ", "Tanzania"], ["sw-KE", "Kenya"]],
-  ["ქართული", ["ka-GE"]],
-  ["Հայերեն", ["hy-AM"]],
-  [
-    "தமிழ்",
-    ["ta-IN", "இந்தியா"],
-    ["ta-SG", "சிங்கப்பூர்"],
-    ["ta-LK", "இலங்கை"],
-    ["ta-MY", "மலேசியா"],
-  ],
-  ["తెలుగు", ["te-IN"]],
-  ["Tiếng Việt", ["vi-VN"]],
-  ["Türkçe", ["tr-TR"]],
-  ["اُردُو", ["ur-PK", "پاکستان"], ["ur-IN", "بھارت"]],
-  ["Ελληνικά", ["el-GR"]],
-  ["български", ["bg-BG"]],
-  ["Pусский", ["ru-RU"]],
-  ["Српски", ["sr-RS"]],
-  ["Українська", ["uk-UA"]],
-  ["한국어", ["ko-KR"]],
-  [
-    "中文",
-    ["cmn-Hans-CN", "普通话 (中国大陆)"],
-    ["cmn-Hans-HK", "普通话 (香港)"],
-    ["cmn-Hant-TW", "中文 (台灣)"],
-    ["yue-Hant-HK", "粵語 (香港)"],
-  ],
-  ["日本語", ["ja-JP"]],
-  ["हिन्दी", ["hi-IN"]],
-  ["ภาษาไทย", ["th-TH"]],
+export const SPEECH_RECOGNITION_LANGUAGES: LanguageInterface[] = [
+  {
+    language: 'Afrikaans',
+    code: 'af-ZA',
+  },
+  {
+    language: 'አማርኛ',
+    code: 'am-ET',
+  },
+  {
+    language: 'Azərbaycanca',
+    code: 'az-AZ',
+  },
+  {
+    language: 'বাংলা',
+    countries: [
+      {
+        name: 'বাংলাদেশ',
+        code: 'bn-BD',
+      },
+      {
+        name: 'ভারত',
+        code: 'bn-IN',
+      },
+    ],
+  },
+  {
+    language: 'Bahasa Indonesia',
+    code: 'id-ID',
+  },
+  {
+    language: 'Bahasa Melayu',
+    code: 'ms-MY',
+  },
+  {
+    language: 'Català',
+    code: 'ca-ES',
+  },
+  {
+    language: 'Čeština',
+    code: 'cs-CZ',
+  },
+  {
+    language: 'Dansk',
+    code: 'da-DK',
+  },
+  {
+    language: 'Deutsch',
+    code: 'de-DE',
+  },
+  {
+    language: 'English',
+    countries: [
+      {
+        name: 'Australia',
+        code: 'en-AU',
+      },
+      {
+        name: 'Canada',
+        code: 'en-CA',
+      },
+      {
+        name: 'India',
+        code: 'en-IN',
+      },
+      {
+        name: 'Kenya',
+        code: 'en-KE',
+      },
+      {
+        name: 'Tanzania',
+        code: 'en-TZ',
+      },
+      {
+        name: 'Ghana',
+        code: 'en-GH',
+      },
+      {
+        name: 'New Zealand',
+        code: 'en-NZ',
+      },
+      {
+        name: 'Nigeria',
+        code: 'en-NG',
+      },
+      {
+        name: 'South Africa',
+        code: 'en-ZA',
+      },
+      {
+        name: 'Philippines',
+        code: 'en-PH',
+      },
+      {
+        name: 'United Kingdom',
+        code: 'en-GB',
+      },
+      {
+        name: 'United States',
+        code: 'en-US',
+      },
+    ],
+  },
+  {
+    language: 'Español',
+    countries: [
+      {
+        name: 'Argentina',
+        code: 'es-AR',
+      },
+      {
+        name: 'Bolivia',
+        code: 'es-BO',
+      },
+      {
+        name: 'Chile',
+        code: 'es-CL',
+      },
+      {
+        name: 'Colombia',
+        code: 'es-CO',
+      },
+      {
+        name: 'Costa Rica',
+        code: 'es-CR',
+      },
+      {
+        name: 'Ecuador',
+        code: 'es-EC',
+      },
+      {
+        name: 'El Salvador',
+        code: 'es-SV',
+      },
+      {
+        name: 'España',
+        code: 'es-ES',
+      },
+      {
+        name: 'Estados Unidos',
+        code: 'es-US',
+      },
+      {
+        name: 'Guatemala',
+        code: 'es-GT',
+      },
+      {
+        name: 'Honduras',
+        code: 'es-HN',
+      },
+      {
+        name: 'México',
+        code: 'es-MX',
+      },
+      {
+        name: 'Nicaragua',
+        code: 'es-NI',
+      },
+      {
+        name: 'Panamá',
+        code: 'es-PA',
+      },
+      {
+        name: 'Paraguay',
+        code: 'es-PY',
+      },
+      {
+        name: 'Perú',
+        code: 'es-PE',
+      },
+      {
+        name: 'Puerto Rico',
+        code: 'es-PR',
+      },
+      {
+        name: 'República Dominicana',
+        code: 'es-DO',
+      },
+      {
+        name: 'Uruguay',
+        code: 'es-UY',
+      },
+      {
+        name: 'Venezuela',
+        code: 'es-VE',
+      },
+    ],
+  },
+  {
+    language: 'Euskara',
+    code: 'eu-ES',
+  },
+  {
+    language: 'Filipino',
+    code: 'fil-PH',
+  },
+  {
+    language: 'Français',
+    code: 'fr-FR',
+  },
+  {
+    language: 'Basa Jawa',
+    code: 'jv-ID',
+  },
+  {
+    language: 'Galego',
+    code: 'gl-ES',
+  },
+  {
+    language: 'ગુજરાતી',
+    code: 'gu-IN',
+  },
+  {
+    language: 'Hrvatski',
+    code: 'hr-HR',
+  },
+  {
+    language: 'IsiZulu',
+    code: 'zu-ZA',
+  },
+  {
+    language: 'Íslenska',
+    code: 'is-IS',
+  },
+  {
+    language: 'Italiano',
+    countries: [
+      {
+        name: 'Italia',
+        code: 'it-IT',
+      },
+      {
+        name: 'Svizzera',
+        code: 'it-CH',
+      },
+    ],
+  },
+  {
+    language: 'ಕನ್ನಡ',
+    code: 'kn-IN',
+  },
+  {
+    language: 'ភាសាខ្មែរ',
+    code: 'km-KH',
+  },
+  {
+    language: 'Latviešu',
+    code: 'lv-LV',
+  },
+  {
+    language: 'Lietuvių',
+    code: 'lt-LT',
+  },
+  {
+    language: 'മലയാളം',
+    code: 'ml-IN',
+  },
+  {
+    language: 'मराठी',
+    code: 'mr-IN',
+  },
+  {
+    language: 'Magyar',
+    code: 'hu-HU',
+  },
+  {
+    language: 'ລາວ',
+    code: 'lo-LA',
+  },
+  {
+    language: 'Nederlands',
+    code: 'nl-NL',
+  },
+  {
+    language: 'नेपाली भाषा',
+    code: 'ne-NP',
+  },
+  {
+    language: 'Norsk bokmål',
+    code: 'nb-NO',
+  },
+  {
+    language: 'Polski',
+    code: 'pl-PL',
+  },
+  {
+    language: 'Português',
+    countries: [
+      {
+        name: 'Brasil',
+        code: 'pt-BR',
+      },
+      {
+        name: 'Portugal',
+        code: 'pt-PT',
+      },
+    ],
+  },
+  {
+    language: 'Română',
+    code: 'ro-RO',
+  },
+  {
+    language: 'සිංහල',
+    code: 'si-LK',
+  },
+  {
+    language: 'Slovenščina',
+    code: 'sl-SI',
+  },
+  {
+    language: 'Basa Sunda',
+    code: 'su-ID',
+  },
+  {
+    language: 'Slovenčina',
+    code: 'sk-SK',
+  },
+  {
+    language: 'Suomi',
+    code: 'fi-FI',
+  },
+  {
+    language: 'Svenska',
+    code: 'sv-SE',
+  },
+  {
+    language: 'Kiswahili',
+    countries: [
+      {
+        name: 'Tanzania',
+        code: 'sw-TZ',
+      },
+      {
+        name: 'Kenya',
+        code: 'sw-KE',
+      },
+    ],
+  },
+  {
+    language: 'ქართული',
+    code: 'ka-GE',
+  },
+  {
+    language: 'Հայերեն',
+    code: 'hy-AM',
+  },
+  {
+    language: 'தமிழ்',
+    countries: [
+      {
+        name: 'இந்தியா',
+        code: 'ta-IN',
+      },
+      {
+        name: 'சிங்கப்பூர்',
+        code: 'ta-SG',
+      },
+      {
+        name: 'இலங்கை',
+        code: 'ta-LK',
+      },
+      {
+        name: 'மலேசியா',
+        code: 'ta-MY',
+      },
+    ],
+  },
+  {
+    language: 'తెలుగు',
+    code: 'te-IN',
+  },
+  {
+    language: 'Tiếng Việt',
+    code: 'vi-VN',
+  },
+  {
+    language: 'Türkçe',
+    code: 'tr-TR',
+  },
+  {
+    language: 'اُردُو',
+    countries: [
+      {
+        name: 'پاکستان',
+        code: 'ur-PK',
+      },
+      {
+        name: 'بھارت',
+        code: 'ur-IN',
+      },
+    ],
+  },
+  {
+    language: 'Ελληνικά',
+    code: 'el-GR',
+  },
+  {
+    language: 'български',
+    code: 'bg-BG',
+  },
+  {
+    language: 'Pусский',
+    code: 'ru-RU',
+  },
+  {
+    language: 'Српски',
+    code: 'sr-RS',
+  },
+  {
+    language: 'Українська',
+    code: 'uk-UA',
+  },
+  {
+    language: '한국어',
+    code: 'ko-KR',
+  },
+  {
+    language: '中文',
+    countries: [
+      {
+        name: '普通话 (中国大陆)',
+        code: 'cmn-Hans-CN',
+      },
+      {
+        name: '普通话 (香港)',
+        code: 'cmn-Hans-HK',
+      },
+      {
+        name: '中文 (台灣)',
+        code: 'cmn-Hant-TW',
+      },
+      {
+        name: '粵語 (香港)',
+        code: 'yue-Hant-HK',
+      },
+    ],
+  },
+  {
+    language: '日本語',
+    code: 'ja-JP',
+  },
+  {
+    language: 'हिन्दी',
+    code: 'hi-IN',
+  },
+  {
+    language: 'ภาษาไทย',
+    code: 'th-TH',
+  },
 ];

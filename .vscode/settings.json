@@ -15,7 +15,7 @@
     ".git/objects",
     ".vscode",
     ".vscode-insiders",
-    "src/config/speechRecognitionLanguages.config.ts"
+    "src/config/speech-recognition-languages.config.ts"
   ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
