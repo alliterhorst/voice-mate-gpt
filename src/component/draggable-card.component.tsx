@@ -7,13 +7,15 @@ import {
   DraggableHeader,
   HeaderButton,
 } from '../style/draggable-card.style';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGripHorizontal } from '@fortawesome/free-solid-svg-icons';
 
 type Position = {
   right: number;
   top: number;
 };
 
-const DraggableCard: React.FC<{
+const DraggableCardComponent: React.FC<{
   title: string;
   children?: React.ReactNode;
 }> = ({ title, children }) => {
@@ -62,14 +64,17 @@ const DraggableCard: React.FC<{
     <DraggableCardContainer style={{ top: `${position.top}px`, right: `${position.right}px` }}>
       <CardHeader>
         <DraggableHeader onMouseDown={startDrag}>
-          <HeaderButton>:::</HeaderButton>
+          <FontAwesomeIcon
+            style={{ position: 'relative', left: '8px', marginRight: '-10px', width: '20px' }}
+            icon={faGripHorizontal}
+          />
           <CardTitle>{title}</CardTitle>
         </DraggableHeader>
-        <HeaderButton>x</HeaderButton>
+        {/* <HeaderButton>x</HeaderButton> */}
       </CardHeader>
       <CardContent>{children}</CardContent>
     </DraggableCardContainer>
   );
 };
 
-export default DraggableCard;
+export default DraggableCardComponent;

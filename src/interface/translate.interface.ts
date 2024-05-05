@@ -1,6 +1,7 @@
 export interface TranslateInterface {
   menuPlayer: {
     start: string;
+    stop: string;
     visitProjectWebsite: string;
 
     voiceRecognitionEnabled: string;
@@ -23,6 +24,7 @@ export interface TranslateInterface {
 export const translateEN: TranslateInterface = {
   menuPlayer: {
     start: 'Start',
+    stop: 'Stop',
     visitProjectWebsite: 'Visit project website',
     voiceRecognitionEnabled: 'Voice recognition enabled. Click to disable.',
     voiceRecognitionDisabled: 'Voice recognition disabled. Click to enable.',
@@ -40,6 +42,7 @@ export const translateEN: TranslateInterface = {
 export const translatePT: TranslateInterface = {
   menuPlayer: {
     start: 'Iniciar',
+    stop: 'Parar',
     visitProjectWebsite: 'Visite o site do projeto',
     voiceRecognitionEnabled: 'O reconhecimento de voz está ativado. Clique para desativar.',
     voiceRecognitionDisabled: 'O reconhecimento de voz está desativado. Clique para ativar.',

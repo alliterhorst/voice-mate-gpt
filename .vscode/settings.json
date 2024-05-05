@@ -7,7 +7,7 @@
       "url": "http://json.schemastore.org/chrome-manifest"
     }
   ],
-  "cSpell.words": ["elevenlabs", "fontawesome", "fortawesome", "Reseta", "VMGPT"],
+  "cSpell.words": ["elevenlabs", "fontawesome", "fortawesome", "Reseta", "VMGPT", "Xmark"],
   "cSpell.ignorePaths": [
     "package-lock.json",
     "node_modules",

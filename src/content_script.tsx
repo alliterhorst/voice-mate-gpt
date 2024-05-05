@@ -1,13 +1,11 @@
 import React from 'react';
-import MenuPlayerComponent from './component/menu-player.component';
 import { createRoot } from 'react-dom/client';
 import { PlayerProvider } from './context/player.context';
 import { ThemeProvider } from 'styled-components';
 import { theme } from './theme/theme';
-import DraggableCard from './component/draggable-card.component';
-import { ActionButton } from './style/action-button.style';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrophone } from '@fortawesome/free-solid-svg-icons';
+import DraggableCardComponent from './component/draggable-card.component';
+import ActionMenuComponent from './component/action-menu.component';
+import { ConfigEnum } from './enum/config.enum';
 
 window.onload = () => {
   const reactAppWrapper = document.createElement('div');
@@ -18,17 +16,9 @@ window.onload = () => {
       <ThemeProvider theme={theme}>
         <PlayerProvider>
           <div>
-            <MenuPlayerComponent />
-            <DraggableCard title="Voice Mate GPT - v1.0.7">
-              <div style={{ display: 'flex', flexGrow: 1, justifyContent: 'space-evenly' }}>
-                <ActionButton>
-                  <FontAwesomeIcon icon={faMicrophone} style={{ width: '16px' }} />
-                </ActionButton>
-                <ActionButton>p</ActionButton>
-                <ActionButton />
-                <ActionButton />
-              </div>
-            </DraggableCard>
+            <DraggableCardComponent title={`${ConfigEnum.PROJECT_NAME} - ${ConfigEnum.VERSION}`}>
+              <ActionMenuComponent />
+            </DraggableCardComponent>
           </div>
         </PlayerProvider>
       </ThemeProvider>
