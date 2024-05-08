@@ -8,7 +8,7 @@ import {
   HeaderButton,
 } from '../style/draggable-card.style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGripHorizontal } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUpRightFromSquare, faGripHorizontal } from '@fortawesome/free-solid-svg-icons';
 
 type Position = {
   right: number;
@@ -70,7 +70,10 @@ const DraggableCardComponent: React.FC<{
           />
           <CardTitle>{title}</CardTitle>
         </DraggableHeader>
-        {/* <HeaderButton>x</HeaderButton> */}
+        <FontAwesomeIcon
+          style={{ position: 'relative', left: '-10px', top: '10px' }}
+          icon={faArrowUpRightFromSquare}
+        />
       </CardHeader>
       <CardContent>{children}</CardContent>
     </DraggableCardContainer>

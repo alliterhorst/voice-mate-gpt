@@ -17,7 +17,6 @@ export interface TranslateInterface {
 
     clickButtonBelowOrSpeakThePauseWordToResume: string;
     resume: string;
-    //Click button below or speak the pause word to resume
   };
 }
 

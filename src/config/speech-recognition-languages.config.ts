@@ -1,4 +1,4 @@
-import { LanguageInterface } from '../interface/language.interface';
+import { LanguageInterface, RecognitionLanguageInterface } from '../interface/language.interface';
 
 export const SPEECH_RECOGNITION_LANGUAGES: LanguageInterface[] = [
   {
@@ -451,3 +451,27 @@ export const SPEECH_RECOGNITION_LANGUAGES: LanguageInterface[] = [
     code: 'th-TH',
   },
 ];
+
+export const ALL_RECOGNITION_LANGUAGES: RecognitionLanguageInterface[] =
+  SPEECH_RECOGNITION_LANGUAGES.reduce((acc, language) => {
+    if (language.code) {
+      acc.push({
+        language: language.language,
+        code: language.code,
+      });
+    } else {
+      language.countries?.forEach((country) => {
+        acc.push({
+          language: language.language,
+          countryName: country.name,
+          code: country.code,
+        });
+      });
+    }
+    return acc;
+  }, [] as RecognitionLanguageInterface[]);
+
+export const getRecognitionLanguageByCode = (
+  code: string
+): RecognitionLanguageInterface | undefined =>
+  ALL_RECOGNITION_LANGUAGES.find((language) => language.code === code);
