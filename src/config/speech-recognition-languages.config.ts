@@ -460,7 +460,7 @@ export const ALL_RECOGNITION_LANGUAGES: RecognitionLanguageInterface[] =
         code: language.code,
       });
     } else {
-      language.countries?.forEach((country) => {
+      language.countries?.forEach(country => {
         acc.push({
           language: language.language,
           countryName: country.name,
@@ -472,6 +472,6 @@ export const ALL_RECOGNITION_LANGUAGES: RecognitionLanguageInterface[] =
   }, [] as RecognitionLanguageInterface[]);
 
 export const getRecognitionLanguageByCode = (
-  code: string
+  code: string,
 ): RecognitionLanguageInterface | undefined =>
-  ALL_RECOGNITION_LANGUAGES.find((language) => language.code === code);
+  ALL_RECOGNITION_LANGUAGES.find(language => language.code === code);

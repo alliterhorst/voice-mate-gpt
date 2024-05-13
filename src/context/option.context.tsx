@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { syncGetStorage, throwContextError } from '../common/utils.common';
 import { LanguageInterface, RecognitionLanguageInterface } from '../interface/language.interface';
-import { StorageKeyEnum } from '../enum/storage-key.enum';
+import StorageKeyEnum from '../enum/storage-key.enum';
 import { getRecognitionLanguageByCode } from '../config/speech-recognition-languages.config';
 
 const businessContext = 'Player';
@@ -10,17 +10,21 @@ const defaultLanguageCode = 'pt-BR';
 interface OptionContextInterface {
   recognitionLanguage?: LanguageInterface;
   setRecognitionLanguageCode: (recognitionLanguageCode: string) => void;
+  optionChange: () => void;
 }
 
 const OptionContext = createContext<OptionContextInterface | null>(null);
 
 export function OptionProvider({ children }: { children: JSX.Element }): JSX.Element {
   const [timeStorageWasLoaded, setTimeStorageWasLoaded] = useState<string>(
-    new Date().toISOString()
+    new Date().toISOString(),
   );
   const [recognitionLanguageCode, setRecognitionLanguageCode] =
     useState<string>(defaultLanguageCode);
   const [recognitionLanguage, setRecognitionLanguage] = useState<RecognitionLanguageInterface>();
+  const optionChange = () => {
+    setTimeStorageWasLoaded(new Date().toISOString());
+  };
 
   useEffect(() => {
     if (chrome?.storage?.sync) {
@@ -33,7 +37,7 @@ export function OptionProvider({ children }: { children: JSX.Element }): JSX.Ele
       ]);
     } else {
       setRecognitionLanguageCode(
-        localStorage.getItem(StorageKeyEnum.RECOGNITION_LANGUAGE) || defaultLanguageCode
+        localStorage.getItem(StorageKeyEnum.RECOGNITION_LANGUAGE) || defaultLanguageCode,
       );
     }
   }, [timeStorageWasLoaded]);
@@ -43,16 +47,16 @@ export function OptionProvider({ children }: { children: JSX.Element }): JSX.Ele
     setRecognitionLanguage(language);
   }, [recognitionLanguageCode, setRecognitionLanguage]);
 
-  return (
-    <OptionContext.Provider
-      value={{
-        recognitionLanguage,
-        setRecognitionLanguageCode,
-      }}
-    >
-      {children}
-    </OptionContext.Provider>
+  const value = useMemo<OptionContextInterface>(
+    () => ({
+      recognitionLanguage,
+      setRecognitionLanguageCode,
+      optionChange,
+    }),
+    [recognitionLanguage],
   );
+
+  return <OptionContext.Provider value={value}>{children}</OptionContext.Provider>;
 }
 
 export function useOptionContext(): OptionContextInterface {

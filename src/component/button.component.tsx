@@ -1,8 +1,8 @@
 import React from 'react';
-import { ActionButton } from '../style/action-button.style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { VariantEnum } from '../enum/variant.enum';
+import ActionButton from '../style/action-button.style';
+import VariantEnum from '../enum/variant.enum';
 
 interface ConfigButtonInterface {
   uniqueId?: string;
@@ -25,7 +25,7 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
 }) => {
   const currentConfig: ConfigButtonInterface =
     $configButton instanceof Array
-      ? $configButton.find((config) => config.uniqueId === $currentUniqueId) || $configButton[0]
+      ? $configButton.find(config => config.uniqueId === $currentUniqueId) || $configButton[0]
       : $configButton;
   return (
     <ActionButton

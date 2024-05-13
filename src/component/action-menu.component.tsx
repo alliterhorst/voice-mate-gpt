@@ -12,7 +12,7 @@ import {
 import ButtonComponent from './button.component';
 import { usePlayerContext } from '../context/player.context';
 import { translate } from '../interface/translate.interface';
-import { VariantEnum } from '../enum/variant.enum';
+import VariantEnum from '../enum/variant.enum';
 
 const ActionMenuComponent: React.FC = () => {
   const {

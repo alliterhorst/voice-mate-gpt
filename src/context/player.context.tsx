@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState } from 'react';
 import { throwContextError } from '../common/utils.common';
 
 const businessContext = 'Player';
@@ -22,22 +22,21 @@ export function PlayerProvider({ children }: { children: JSX.Element }): JSX.Ele
   const [isTextToSpeechEnabled, setIsTextToSpeechEnabled] = useState<boolean>(true);
   const [isOpenSettingsMenu, setIsOpenSettingsMenu] = useState<boolean>(false);
 
-  return (
-    <PlayerContext.Provider
-      value={{
-        hasPlayerStarted,
-        setHasPlayerStarted,
-        isMicrophoneEnabled,
-        setIsMicrophoneEnabled,
-        isTextToSpeechEnabled,
-        setIsTextToSpeechEnabled,
-        isOpenSettingsMenu,
-        setIsOpenSettingsMenu,
-      }}
-    >
-      {children}
-    </PlayerContext.Provider>
+  const value = useMemo<PlayerContextInterface>(
+    () => ({
+      hasPlayerStarted,
+      setHasPlayerStarted,
+      isMicrophoneEnabled,
+      setIsMicrophoneEnabled,
+      isTextToSpeechEnabled,
+      setIsTextToSpeechEnabled,
+      isOpenSettingsMenu,
+      setIsOpenSettingsMenu,
+    }),
+    [hasPlayerStarted, isMicrophoneEnabled, isTextToSpeechEnabled, isOpenSettingsMenu],
   );
+
+  return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>;
 }
 
 export function usePlayerContext(): PlayerContextInterface {

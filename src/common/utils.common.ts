@@ -1,8 +1,9 @@
-import { StorageKeyEnum } from '../enum/storage-key.enum';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import StorageKeyEnum from '../enum/storage-key.enum';
 
 export function throwContextError(businessContext: string): void {
   throw new Error(
-    `use${businessContext}Context deve ser utilizando dentro do ${businessContext}Provider`
+    `use${businessContext}Context deve ser utilizando dentro do ${businessContext}Provider`,
   );
 }
 
@@ -11,9 +12,9 @@ export function syncGetStorage(
     storageKey: StorageKeyEnum;
     initialValue: any;
     setCallback: (value: any) => void;
-  }[]
+  }[],
 ) {
-  let items: { [key: string]: any } = {};
+  const items: { [key: string]: any } = {};
   const setters: {
     setCallback: (value: any) => void;
     storageKey: string;
@@ -24,9 +25,9 @@ export function syncGetStorage(
     setters.push({ setCallback, storageKey });
   });
 
-  chrome.storage.sync.get(items, (items) => {
-    setters.forEach(({ setCallback: setCallback, storageKey }) => {
-      setCallback(items[storageKey]);
+  chrome.storage.sync.get(items, result => {
+    setters.forEach(({ setCallback, storageKey }) => {
+      setCallback(result[storageKey]);
     });
   });
 }
@@ -36,13 +37,16 @@ export function setStorage(
     storageKey: StorageKeyEnum;
     value: any;
   }[],
-  callback?: () => void
+  callback?: () => void,
 ) {
   chrome.storage.sync.set(
-    params.reduce((acc, { storageKey, value }) => {
-      acc[storageKey] = value;
-      return acc;
-    }, {} as { [key: string]: any }),
-    callback
+    params.reduce(
+      (acc, { storageKey, value }) => {
+        acc[storageKey] = value;
+        return acc;
+      },
+      {} as { [key: string]: any },
+    ),
+    callback,
   );
 }

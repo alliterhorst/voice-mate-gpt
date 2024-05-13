@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUpRightFromSquare, faGripHorizontal } from '@fortawesome/free-solid-svg-icons';
 import {
   CardContent,
   CardHeader,
   CardTitle,
   DraggableCardContainer,
   DraggableHeader,
-  HeaderButton,
 } from '../style/draggable-card.style';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpRightFromSquare, faGripHorizontal } from '@fortawesome/free-solid-svg-icons';
 
 type Position = {
   right: number;
