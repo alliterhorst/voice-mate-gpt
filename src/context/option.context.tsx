@@ -1,14 +1,17 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { syncGetStorage, throwContextError } from '../common/utils.common';
-import { LanguageInterface, RecognitionLanguageInterface } from '../interface/language.interface';
+import { RecognitionLanguageInterface } from '../interface/language.interface';
 import StorageKeyEnum from '../enum/storage-key.enum';
-import { getRecognitionLanguageByCode } from '../config/speech-recognition-languages.config';
+import {
+  defaultRecognitionLanguage,
+  getRecognitionLanguageByCode,
+} from '../config/speech-recognition-languages.config';
 
 const businessContext = 'Player';
 const defaultLanguageCode = 'pt-BR';
 
 interface OptionContextInterface {
-  recognitionLanguage?: LanguageInterface;
+  recognitionLanguage: RecognitionLanguageInterface;
   setRecognitionLanguageCode: (recognitionLanguageCode: string) => void;
   optionChange: () => void;
 }
@@ -21,7 +24,9 @@ export function OptionProvider({ children }: { children: JSX.Element }): JSX.Ele
   );
   const [recognitionLanguageCode, setRecognitionLanguageCode] =
     useState<string>(defaultLanguageCode);
-  const [recognitionLanguage, setRecognitionLanguage] = useState<RecognitionLanguageInterface>();
+  const [recognitionLanguage, setRecognitionLanguage] = useState<RecognitionLanguageInterface>(
+    defaultRecognitionLanguage,
+  );
   const optionChange = () => {
     setTimeStorageWasLoaded(new Date().toISOString());
   };

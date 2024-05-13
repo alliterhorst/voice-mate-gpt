@@ -471,7 +471,11 @@ export const ALL_RECOGNITION_LANGUAGES: RecognitionLanguageInterface[] =
     return acc;
   }, [] as RecognitionLanguageInterface[]);
 
-export const getRecognitionLanguageByCode = (
-  code: string,
-): RecognitionLanguageInterface | undefined =>
-  ALL_RECOGNITION_LANGUAGES.find(language => language.code === code);
+export const defaultRecognitionLanguage: RecognitionLanguageInterface = {
+  language: 'Português',
+  countryName: 'Brasil',
+  code: 'pt-BR',
+};
+
+export const getRecognitionLanguageByCode = (code: string): RecognitionLanguageInterface =>
+  ALL_RECOGNITION_LANGUAGES.find(language => language.code === code) || defaultRecognitionLanguage;

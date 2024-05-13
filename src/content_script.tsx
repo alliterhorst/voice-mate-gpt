@@ -7,6 +7,7 @@ import { theme } from './theme/theme';
 import DraggableCardComponent from './component/draggable-card.component';
 import ActionMenuComponent from './component/action-menu.component';
 import ConfigEnum from './enum/config.enum';
+import { SpeechRecognitionProvider } from './context/speech-recognition.context';
 
 window.onload = () => {
   const reactAppWrapper = document.createElement('div');
@@ -17,11 +18,15 @@ window.onload = () => {
       <ThemeProvider theme={theme}>
         <OptionProvider>
           <PlayerProvider>
-            <div>
-              <DraggableCardComponent title={`${ConfigEnum.PROJECT_NAME} - ${ConfigEnum.VERSION}`}>
-                <ActionMenuComponent />
-              </DraggableCardComponent>
-            </div>
+            <SpeechRecognitionProvider>
+              <div>
+                <DraggableCardComponent
+                  title={`${ConfigEnum.PROJECT_NAME} - ${ConfigEnum.VERSION}`}
+                >
+                  <ActionMenuComponent />
+                </DraggableCardComponent>
+              </div>
+            </SpeechRecognitionProvider>
           </PlayerProvider>
         </OptionProvider>
       </ThemeProvider>

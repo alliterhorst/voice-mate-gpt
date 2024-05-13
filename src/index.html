@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -19,6 +19,100 @@
   </head>
   <body>
     <div id="root"></div>
+    <div class="px-3 text-base md:px-4 m-auto md:px-5 lg:px-1 xl:px-5">
+      <div
+        class="mx-auto flex flex-1 gap-3 text-base juice:gap-4 juice:md:gap-6 md:max-w-3xl lg:max-w-[40rem] xl:max-w-[48rem]"
+      >
+        <form class="w-full">
+          <div class="relative flex h-full max-w-full flex-1 flex-col">
+            <div class="absolute bottom-full left-0 right-0"></div>
+            <div class="flex w-full items-center">
+              <div
+                class="overflow-hidden [&amp;:has(textarea:focus)]:border-token-border-xheavy [&amp;:has(textarea:focus)]:shadow-[0_2px_6px_rgba(0,0,0,.05)] flex flex-col w-full flex-grow relative border dark:text-white rounded-2xl bg-token-main-surface-primary border-token-border-medium"
+              >
+                <textarea
+                  id="prompt-textarea"
+                  tabindex="0"
+                  data-id="19eab09d-77d1-4231-9d1e-fdd014e46276"
+                  dir="auto"
+                  rows="1"
+                  placeholder="Mensagem ChatGPT"
+                  class="m-0 w-full resize-none border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent py-[10px] pr-10 md:py-3.5 md:pr-12 max-h-[25dvh] max-h-52 placeholder-black/50 dark:placeholder-white/50 pl-10 md:pl-[55px]"
+                  style="height: 52px; overflow-y: hidden"
+                ></textarea>
+                <div
+                  class="absolute bottom-2.5 left-2 md:bottom-3.5 md:left-4"
+                  type="button"
+                  aria-haspopup="dialog"
+                  aria-expanded="false"
+                  aria-controls="radix-:r4l:"
+                  data-state="closed"
+                >
+                  <div class="flex">
+                    <button
+                      class="flex items-center justify-center text-token-text-primary juice:h-8 juice:w-8 dark:text-white juice:rounded-full focus-visible:outline-black dark:focus-visible:outline-white juice:mb-1 juice:ml-[3px]"
+                      aria-label="Anexar arquivos"
+                      onclick="handleButtonClick(event, 'Anexar arquivos')"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill="currentColor"
+                          fill-rule="evenodd"
+                          d="M9 7a5 5 0 0 1 10 0v8a7 7 0 1 1-14 0V9a1 1 0 0 1 2 0v6a5 5 0 0 0 10 0V7a3 3 0 1 0-6 0v8a1 1 0 1 0 2 0V9a1 1 0 1 1 2 0v6a3 3 0 1 1-6 0z"
+                          clip-rule="evenodd"
+                        ></path>
+                      </svg></button
+                    ><input
+                      multiple=""
+                      type="file"
+                      tabindex="-1"
+                      class="hidden"
+                      style="display: none"
+                    />
+                  </div>
+                </div>
+                <button
+                  class="absolute bottom-1.5 right-2 rounded-lg border border-black bg-black p-0.5 text-white transition-colors enabled:bg-black disabled:text-gray-400 disabled:opacity-10 dark:border-white dark:bg-white dark:hover:bg-white md:bottom-2.5 md:right-3"
+                  data-testid="send-button"
+                  onclick="handleButtonClick(event, 'Send-Button')"
+                >
+                  <span class="" data-state="closed"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      class="icon-lg text-white dark:text-black"
+                    >
+                      <path
+                        fill="currentColor"
+                        fill-rule="evenodd"
+                        d="M12 3a1 1 0 0 1 .707.293l7 7a1 1 0 0 1-1.414 1.414L13 6.414V20a1 1 0 1 1-2 0V6.414l-5.293 5.293a1 1 0 0 1-1.414-1.414l7-7A1 1 0 0 1 12 3"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                    .</span
+                  >
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script>
+      function handleButtonClick(event, buttonName) {
+        event.preventDefault();
+        console.log('Button clicked: ' + buttonName);
+      }
+    </script>
     <script src="./app.js" defer></script>
     <script src="./content_script.js" defer></script>
   </body>
