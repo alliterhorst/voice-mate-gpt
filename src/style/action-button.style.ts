@@ -4,8 +4,8 @@ import VariantEnum from '../enum/variant.enum';
 
 const ActionButton = styled.button<{ theme: Theme; $variant: VariantEnum; $hasLabel?: boolean }>`
   height: 40px;
-  width: ${props => (props.$hasLabel ? 'auto' : '40px')};
-  background-color: ${props => {
+  width: ${(props): string => (props.$hasLabel ? 'auto' : '40px')};
+  background-color: ${(props): string => {
     switch (props.$variant) {
       case VariantEnum.PRIMARY:
         return props.theme.colors.primary;
@@ -15,10 +15,10 @@ const ActionButton = styled.button<{ theme: Theme; $variant: VariantEnum; $hasLa
         return '';
     }
   }};
-  border-radius: ${props => (props.$hasLabel ? props.theme.borderRadius : '50%')};
+  border-radius: ${(props): string => (props.$hasLabel ? props.theme.borderRadius : '50%')};
   padding: 10px;
   border: none;
-  color: ${props => props.theme.colors.text};
+  color: ${(props): string => props.theme.colors.text};
   font-size: 24px;
   cursor: pointer;
   outline: none;
@@ -31,7 +31,7 @@ const ActionButton = styled.button<{ theme: Theme; $variant: VariantEnum; $hasLa
 
   &:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-    background-color: ${props => {
+    background-color: ${(props): string => {
       switch (props.$variant) {
         case VariantEnum.PRIMARY:
           return props.theme.colors.primaryHover;
@@ -41,7 +41,7 @@ const ActionButton = styled.button<{ theme: Theme; $variant: VariantEnum; $hasLa
           return '';
       }
     }};
-    ${props => props.theme.colors.hover};
+    ${(props): string => props.theme.colors.hover};
   }
 
   &:focus {

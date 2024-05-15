@@ -27,7 +27,7 @@ export function OptionProvider({ children }: { children: JSX.Element }): JSX.Ele
   const [recognitionLanguage, setRecognitionLanguage] = useState<RecognitionLanguageInterface>(
     defaultRecognitionLanguage,
   );
-  const optionChange = () => {
+  const optionChange = (): void => {
     setTimeStorageWasLoaded(new Date().toISOString());
   };
 

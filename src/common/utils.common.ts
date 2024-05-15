@@ -13,7 +13,7 @@ export function syncGetStorage(
     initialValue: any;
     setCallback: (value: any) => void;
   }[],
-) {
+): void {
   const items: { [key: string]: any } = {};
   const setters: {
     setCallback: (value: any) => void;
@@ -38,7 +38,7 @@ export function setStorage(
     value: any;
   }[],
   callback?: () => void,
-) {
+): void {
   chrome.storage.sync.set(
     params.reduce(
       (acc, { storageKey, value }) => {

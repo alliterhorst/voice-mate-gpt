@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
-function Options() {
+function Options(): JSX.Element {
   // eslint-disable-next-line react/jsx-no-useless-fragment
   return <></>;
 }

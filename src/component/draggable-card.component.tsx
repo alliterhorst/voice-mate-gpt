@@ -22,7 +22,7 @@ const DraggableCardComponent: React.FC<{
   const [position, setPosition] = useState<Position>({ right: 16, top: 50 });
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent): void => {
       if (!isDragging) return;
 
       setPosition((prevPosition: Position) => ({
@@ -31,7 +31,7 @@ const DraggableCardComponent: React.FC<{
       }));
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (): void => {
       setIsDragging(false);
       document.body.style.userSelect = '';
       document.body.style.webkitUserSelect = '';
@@ -49,13 +49,13 @@ const DraggableCardComponent: React.FC<{
       document.removeEventListener('mouseup', handleMouseUp);
     }
 
-    return () => {
+    return (): void => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging]);
 
-  const startDrag = () => {
+  const startDrag = (): void => {
     setIsDragging(true);
   };
 

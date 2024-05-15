@@ -9,7 +9,7 @@ import ActionMenuComponent from './component/action-menu.component';
 import ConfigEnum from './enum/config.enum';
 import { SpeechRecognitionProvider } from './context/speech-recognition.context';
 
-window.onload = () => {
+window.onload = (): void => {
   const reactAppWrapper = document.createElement('div');
   document.body.appendChild(reactAppWrapper);
   const root = createRoot(reactAppWrapper);

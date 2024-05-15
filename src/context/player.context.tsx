@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { throwContextError } from '../common/utils.common';
 
 const businessContext = 'Player';
 
 interface PlayerContextInterface {
   hasPlayerStarted: boolean;
-  setHasPlayerStarted: (hasPlayerStarted: boolean) => void;
+  startPlayer: () => void;
   isMicrophoneEnabled: boolean;
   setIsMicrophoneEnabled: (isMicrophoneEnabled: boolean) => void;
   isTextToSpeechEnabled: boolean;
@@ -17,15 +17,21 @@ interface PlayerContextInterface {
 const PlayerContext = createContext<PlayerContextInterface | null>(null);
 
 export function PlayerProvider({ children }: { children: JSX.Element }): JSX.Element {
-  const [hasPlayerStarted, setHasPlayerStarted] = useState<boolean>(true);
-  const [isMicrophoneEnabled, setIsMicrophoneEnabled] = useState<boolean>(true);
-  const [isTextToSpeechEnabled, setIsTextToSpeechEnabled] = useState<boolean>(true);
+  const [hasPlayerStarted, setHasPlayerStarted] = useState<boolean>(false);
+  const [isMicrophoneEnabled, setIsMicrophoneEnabled] = useState<boolean>(false);
+  const [isTextToSpeechEnabled, setIsTextToSpeechEnabled] = useState<boolean>(false);
   const [isOpenSettingsMenu, setIsOpenSettingsMenu] = useState<boolean>(false);
+
+  const startPlayer = useCallback(() => {
+    setHasPlayerStarted(true);
+    setIsMicrophoneEnabled(true);
+    setIsTextToSpeechEnabled(true);
+  }, []);
 
   const value = useMemo<PlayerContextInterface>(
     () => ({
       hasPlayerStarted,
-      setHasPlayerStarted,
+      startPlayer,
       isMicrophoneEnabled,
       setIsMicrophoneEnabled,
       isTextToSpeechEnabled,
@@ -33,7 +39,7 @@ export function PlayerProvider({ children }: { children: JSX.Element }): JSX.Ele
       isOpenSettingsMenu,
       setIsOpenSettingsMenu,
     }),
-    [hasPlayerStarted, isMicrophoneEnabled, isTextToSpeechEnabled, isOpenSettingsMenu],
+    [hasPlayerStarted, startPlayer, isMicrophoneEnabled, isTextToSpeechEnabled, isOpenSettingsMenu],
   );
 
   return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>;

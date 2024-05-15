@@ -1,4 +1,12 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { throwContextError } from '../common/utils.common';
 import { usePlayerContext } from './player.context';
 import { useOptionContext } from './option.context';
@@ -25,33 +33,46 @@ export function SpeechRecognitionProvider({ children }: { children: JSX.Element 
   const [transcript, setTranscript] = useState<string>('');
   const [error, setError] = useState<string>('');
 
-  const speechRecognition: SpeechRecognition | null = useMemo(() => {
+  const prevMicEnabledRef = useRef(isMicrophoneEnabled);
+  const prevLangCodeRef = useRef(recognitionLanguage.code);
+
+  const speechRecognition = useRef<SpeechRecognition | null>(null);
+
+  useMemo(() => {
+    if (!isMicrophoneEnabled) return;
+
+    if (
+      prevMicEnabledRef.current === isMicrophoneEnabled &&
+      prevLangCodeRef.current === recognitionLanguage.code
+    ) {
+      console.log('No significant changes. Reusing the existing speech recognition setup.');
+      return;
+    }
+
     console.log(
       'isMicrophoneEnabled, recognitionLanguage.code',
       isMicrophoneEnabled,
       recognitionLanguage.code,
     );
 
-    if (!isMicrophoneEnabled) return null;
-
     const recognition = SpeechRecognitionConstructor ? new SpeechRecognitionConstructor() : null;
     if (recognition) {
       recognition.continuous = true;
       recognition.lang = recognitionLanguage.code;
-      recognition.onstart = () => {
+      recognition.onstart = (): void => {
         setIsListening(true);
         console.log("[SPEECH-REC] I'm listening");
       };
-      recognition.onend = () => {
+      recognition.onend = (): void => {
         setIsListening(false);
         console.log("[SPEECH-REC] I've stopped listening");
       };
-      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      recognition.onerror = (event: SpeechRecognitionErrorEvent): void => {
         setIsListening(false);
         setError(`Error occurred in speech recognition: ${event.error}`);
         console.error('[SPEECH-REC] Error while listening', event);
       };
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
+      recognition.onresult = (event: SpeechRecognitionEvent): void => {
         const currentTranscript = Array.from(event.results)
           .map(result => result[0].transcript)
           .join('');
@@ -59,36 +80,30 @@ export function SpeechRecognitionProvider({ children }: { children: JSX.Element 
         console.log('[SPEECH-REC] Voice recognition transcript:', currentTranscript);
         console.log('[SPEECH-REC] Voice recognition event:', event);
       };
+      recognition.start();
     }
-    return recognition;
+
+    speechRecognition.current = recognition;
+    prevMicEnabledRef.current = isMicrophoneEnabled;
+    prevLangCodeRef.current = recognitionLanguage.code;
   }, [isMicrophoneEnabled, recognitionLanguage.code]);
 
   const startSpeechRecognition = useCallback(() => {
-    if (speechRecognition && !isListening) {
-      speechRecognition.start();
+    if (speechRecognition?.current && !isListening) {
+      speechRecognition.current.start();
     }
   }, [speechRecognition, isListening]);
 
   const stopSpeechRecognition = useCallback(() => {
-    if (speechRecognition && isListening) {
-      speechRecognition.stop();
+    if (speechRecognition?.current && isListening) {
+      speechRecognition.current.stop();
     }
-  }, [speechRecognition, isListening]);
-
-  useEffect(() => {
-    console.log('speechRecognition, isListening', speechRecognition, isListening);
-    if (!speechRecognition) {
-      console.error('[SPEECH-REC] Speech recognition is not available', speechRecognition);
-      return;
-    }
-    console.log('[SPEECH-REC] Speech recognition is available', speechRecognition);
-    // if (isListening) speechRecognition.start();
   }, [speechRecognition, isListening]);
 
   useEffect(
-    () => () => {
-      if (speechRecognition && isListening) {
-        speechRecognition.stop();
+    () => (): void => {
+      if (speechRecognition?.current && isListening) {
+        speechRecognition.current.stop();
       }
     },
     [speechRecognition, isListening],

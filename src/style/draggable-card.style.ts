@@ -4,13 +4,13 @@ import { Theme } from '../theme/theme';
 const DraggableCardContainer = styled.div<{
   theme: Theme;
 }>`
-  font-family: ${props => props.theme.fontFamily};
-  color: ${props => props.theme.colors.text};
-  border: 1px solid ${props => props.theme.colors.border};
-  border-radius: ${props => props.theme.borderRadius};
+  font-family: ${(props): string => props.theme.fontFamily};
+  color: ${(props): string => props.theme.colors.text};
+  border: 1px solid ${(props): string => props.theme.colors.border};
+  border-radius: ${(props): string => props.theme.borderRadius};
   width: 300px;
   height: 100px;
-  background-color: ${props => props.theme.colors.background};
+  background-color: ${(props): string => props.theme.colors.background};
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -20,7 +20,7 @@ const DraggableCardContainer = styled.div<{
 
 const CardHeader = styled.div<{ theme: Theme }>`
   text-align: center;
-  border-bottom: 1px solid ${props => props.theme.colors.border};
+  border-bottom: 1px solid ${(props): string => props.theme.colors.border};
   display: flex;
   height: 40px;
 `;

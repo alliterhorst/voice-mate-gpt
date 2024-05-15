@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
-const App = () => (
+const App = (): JSX.Element => (
   <div>
     <h1>Voice Mate GPT - Test Page</h1>
   </div>

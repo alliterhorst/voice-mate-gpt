@@ -1,12 +1,13 @@
 import React, { useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
-function Popup() {
+function Popup(): JSX.Element {
   const colorInputRef = useRef(null);
 
-  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     navigator.clipboard.writeText(e.target.value);
   };
+
   return (
     <div>
       <p>Hello World</p>
