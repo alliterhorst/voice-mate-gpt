@@ -32,6 +32,7 @@ export function SpeechRecognitionProvider({ children }: { children: JSX.Element 
   const [isListening, setIsListening] = useState<boolean>(false);
   const [transcript, setTranscript] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [timeWhenStoppedListening, setTimeWhenStoppedListening] = useState<string>('');
 
   const prevMicEnabledRef = useRef(isMicrophoneEnabled);
   const prevLangCodeRef = useRef(recognitionLanguage.code);
@@ -39,23 +40,35 @@ export function SpeechRecognitionProvider({ children }: { children: JSX.Element 
   const speechRecognition = useRef<SpeechRecognition | null>(null);
 
   useMemo(() => {
-    if (!isMicrophoneEnabled) return;
+    const microphoneHasBeenChanged = prevMicEnabledRef.current !== isMicrophoneEnabled;
+    const recognitionLanguageHasBeenChanged = prevLangCodeRef.current !== recognitionLanguage.code;
 
-    if (
-      prevMicEnabledRef.current === isMicrophoneEnabled &&
-      prevLangCodeRef.current === recognitionLanguage.code
-    ) {
-      console.log('No significant changes. Reusing the existing speech recognition setup.');
+    prevMicEnabledRef.current = isMicrophoneEnabled;
+    prevLangCodeRef.current = recognitionLanguage.code;
+
+    if (!microphoneHasBeenChanged) {
+      if (!recognitionLanguageHasBeenChanged) {
+        console.log('No significant changes. Reusing the existing speech recognition setup.');
+        return;
+      }
+      if (speechRecognition.current) {
+        speechRecognition.current.stop();
+      }
+    } else if (speechRecognition.current) {
+      if (isMicrophoneEnabled) {
+        try {
+          speechRecognition.current.start();
+        } catch (startError) {
+          console.error('Error while starting speech recognition:', startError);
+        }
+      } else {
+        speechRecognition.current.stop();
+      }
       return;
     }
 
-    console.log(
-      'isMicrophoneEnabled, recognitionLanguage.code',
-      isMicrophoneEnabled,
-      recognitionLanguage.code,
-    );
-
     const recognition = SpeechRecognitionConstructor ? new SpeechRecognitionConstructor() : null;
+
     if (recognition) {
       recognition.continuous = true;
       recognition.lang = recognitionLanguage.code;
@@ -64,6 +77,7 @@ export function SpeechRecognitionProvider({ children }: { children: JSX.Element 
         console.log("[SPEECH-REC] I'm listening");
       };
       recognition.onend = (): void => {
+        setTimeWhenStoppedListening(new Date().toISOString());
         setIsListening(false);
         console.log("[SPEECH-REC] I've stopped listening");
       };
@@ -84,12 +98,11 @@ export function SpeechRecognitionProvider({ children }: { children: JSX.Element 
     }
 
     speechRecognition.current = recognition;
-    prevMicEnabledRef.current = isMicrophoneEnabled;
-    prevLangCodeRef.current = recognitionLanguage.code;
   }, [isMicrophoneEnabled, recognitionLanguage.code]);
 
   const startSpeechRecognition = useCallback(() => {
     if (speechRecognition?.current && !isListening) {
+      setTimeWhenStoppedListening('');
       speechRecognition.current.start();
     }
   }, [speechRecognition, isListening]);
@@ -102,12 +115,23 @@ export function SpeechRecognitionProvider({ children }: { children: JSX.Element 
 
   useEffect(
     () => (): void => {
-      if (speechRecognition?.current && isListening) {
-        speechRecognition.current.stop();
+      if (speechRecognition?.current && timeWhenStoppedListening) {
+        console.log(
+          'speechRecognition?.current && timeWhenStoppedListening',
+          speechRecognition?.current,
+          timeWhenStoppedListening,
+        );
+        startSpeechRecognition();
       }
     },
-    [speechRecognition, isListening],
+    [startSpeechRecognition, timeWhenStoppedListening],
   );
+
+  useEffect(() => {
+    if (!isMicrophoneEnabled && isListening && speechRecognition?.current) {
+      stopSpeechRecognition();
+    }
+  }, [isListening, isMicrophoneEnabled, stopSpeechRecognition]);
 
   const value = useMemo<SpeechRecognitionContextInterface>(
     () => ({
