@@ -10,6 +10,7 @@ import React, {
 import { throwContextError } from '../common/utils.common';
 import { usePlayerContext } from './player.context';
 import { useOptionContext } from './option.context';
+import RecognitionEventEnum from '../enum/recognition-event.enum';
 
 const businessContext = 'SpeechRecognition';
 
@@ -19,6 +20,7 @@ interface SpeechRecognitionContextInterface {
   stopSpeechRecognition: () => void;
   changeLanguage: (lang: string) => void;
   transcript: string;
+  microphoneVolume: number;
   error: string;
 }
 
@@ -30,6 +32,7 @@ export function SpeechRecognitionProvider({ children }: { children: ReactNode })
   const [isListening, setIsListening] = useState<boolean>(false);
   const [transcript, setTranscript] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [microphoneVolume, setMicrophoneVolume] = useState<number>(0);
 
   const startSpeechRecognition = useCallback(() => {
     window.SpeechRecognitionService.start();
@@ -44,10 +47,17 @@ export function SpeechRecognitionProvider({ children }: { children: ReactNode })
   }, []);
 
   useEffect(() => {
-    const handleStateChange = (service: typeof window.SpeechRecognitionService): void => {
-      setIsListening(service.getIsListening());
-      setTranscript(service.getTranscript());
-      setError(service.getError());
+    const handleStateChange = (
+      service: typeof window.SpeechRecognitionService,
+      recognitionEventEnum: RecognitionEventEnum,
+    ): void => {
+      if (recognitionEventEnum === RecognitionEventEnum.UPDATE_MICROPHONE_VOLUME) {
+        setMicrophoneVolume(service.getMicrophoneVolume());
+      } else {
+        setIsListening(service.getIsListening());
+        setTranscript(service.getTranscript());
+        setError(service.getError());
+      }
     };
 
     window.SpeechRecognitionService.subscribe(handleStateChange);
@@ -79,9 +89,18 @@ export function SpeechRecognitionProvider({ children }: { children: ReactNode })
       stopSpeechRecognition,
       changeLanguage,
       transcript,
+      microphoneVolume,
       error,
     }),
-    [isListening, startSpeechRecognition, stopSpeechRecognition, changeLanguage, transcript, error],
+    [
+      isListening,
+      startSpeechRecognition,
+      stopSpeechRecognition,
+      changeLanguage,
+      transcript,
+      microphoneVolume,
+      error,
+    ],
   );
 
   return (

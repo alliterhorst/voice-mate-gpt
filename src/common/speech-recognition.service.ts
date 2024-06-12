@@ -1,4 +1,10 @@
-type SpeechRecognitionListener = (service: SpeechRecognitionService) => void;
+import { defaultRecognitionLanguage } from '../config/speech-recognition-languages.config';
+import RecognitionEventEnum from '../enum/recognition-event.enum';
+
+type SpeechRecognitionListener = (
+  service: SpeechRecognitionService,
+  recognitionEventEnum: RecognitionEventEnum,
+) => void;
 
 class SpeechRecognitionService {
   private recognition: SpeechRecognition | null;
@@ -17,15 +23,27 @@ class SpeechRecognitionService {
 
   private keepAliveInterval: NodeJS.Timeout | null;
 
+  private audioContext: AudioContext | null;
+
+  private analyser: AnalyserNode | null;
+
+  private microphoneStream: MediaStream | null;
+
+  private microphoneVolume: number;
+
   constructor() {
     this.recognition = null;
     this.listeners = [];
     this.isListening = false;
     this.transcript = '';
     this.error = '';
-    this.language = 'en-US';
+    this.language = defaultRecognitionLanguage.code;
     this.forceStop = false;
     this.keepAliveInterval = null;
+    this.audioContext = null;
+    this.analyser = null;
+    this.microphoneStream = null;
+    this.microphoneVolume = 0;
 
     this.init();
   }
@@ -53,6 +71,7 @@ class SpeechRecognitionService {
 
     this.recognition.onend = (): void => {
       this.isListening = false;
+      this.stopAudioCapture();
       console.log('SpeechRecognitionService onend');
       this.notifyListeners();
     };
@@ -65,7 +84,6 @@ class SpeechRecognitionService {
 
     this.recognition.onresult = (event: SpeechRecognitionEvent): void => {
       this.transcript = event.results[event.results.length - 1][0].transcript || '';
-      console.log('SpeechRecognitionService onresult:', this.transcript);
       this.notifyListeners();
     };
   }
@@ -75,6 +93,7 @@ class SpeechRecognitionService {
       this.forceStop = false;
       try {
         this.recognition.start();
+        this.startAudioCapture();
         this.startKeepAlive();
       } catch (error) {
         console.log('SpeechRecognitionService start error:', error);
@@ -96,11 +115,13 @@ class SpeechRecognitionService {
   }
 
   changeLanguage(lang: string): void {
+    const currentIsListening = this.isListening;
     if (this.recognition && this.language !== lang) {
-      this.stop(true);
+      if (currentIsListening) this.stop(true);
+
       this.language = lang;
       this.recognition.lang = lang;
-      this.start();
+      if (currentIsListening) this.start();
     }
   }
 
@@ -123,6 +144,64 @@ class SpeechRecognitionService {
     }
   }
 
+  private async startAudioCapture(): Promise<void> {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.microphoneStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const source = this.audioContext.createMediaStreamSource(this.microphoneStream);
+      this.analyser = this.audioContext.createAnalyser();
+      source.connect(this.analyser);
+
+      this.analyseAudio();
+    } catch (error) {
+      console.error('Error capturing audio: ', error);
+    }
+  }
+
+  private stopAudioCapture(): void {
+    if (this.microphoneStream) {
+      const tracks = this.microphoneStream.getTracks();
+      tracks.forEach(track => track.stop());
+      this.microphoneStream = null;
+    }
+
+    if (this.audioContext) {
+      this.audioContext.close();
+      this.audioContext = null;
+    }
+
+    if (this.analyser) {
+      this.analyser.disconnect();
+      this.analyser = null;
+    }
+  }
+
+  private analyseAudio(): void {
+    if (!this.analyser) return;
+
+    const bufferLength = this.analyser.fftSize;
+    const dataArray = new Float32Array(bufferLength);
+    this.analyser.getFloatTimeDomainData(dataArray);
+
+    let sumSquares = 0.0;
+
+    dataArray.forEach(amplitude => {
+      sumSquares += amplitude * amplitude;
+    });
+    const volume = Math.sqrt(sumSquares / bufferLength);
+
+    const normalizedVolume = Math.round(Math.min(Math.max(volume * 100, 0), 100));
+
+    if (normalizedVolume !== this.microphoneVolume) {
+      console.log('Microphone volume:', normalizedVolume);
+      this.microphoneVolume = normalizedVolume;
+      this.notifyListeners(RecognitionEventEnum.UPDATE_MICROPHONE_VOLUME);
+    }
+
+    requestAnimationFrame(() => this.analyseAudio());
+  }
+
   subscribe(listener: SpeechRecognitionListener): void {
     this.listeners.push(listener);
   }
@@ -131,8 +210,10 @@ class SpeechRecognitionService {
     this.listeners = this.listeners.filter(l => l !== listener);
   }
 
-  private notifyListeners(): void {
-    this.listeners.forEach(listener => listener(this));
+  private notifyListeners(
+    recognitionEventEnum: RecognitionEventEnum = RecognitionEventEnum.UPDATE_TRANSCRIPT,
+  ): void {
+    this.listeners.forEach(listener => listener(this, recognitionEventEnum));
   }
 
   getIsListening(): boolean {
@@ -141,6 +222,10 @@ class SpeechRecognitionService {
 
   getTranscript(): string {
     return this.transcript;
+  }
+
+  getMicrophoneVolume(): number {
+    return this.microphoneVolume;
   }
 
   getError(): string {
