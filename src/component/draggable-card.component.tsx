@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUpRightFromSquare, faGripHorizontal } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -17,12 +17,14 @@ type Position = {
   top: number;
 };
 
+const defaultPosition: Position = { right: 16, top: 50 };
+
 const DraggableCardComponent: React.FC<{
   title: string;
   children?: React.ReactNode;
 }> = ({ title, children }) => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [position, setPosition] = useState<Position>({ right: 16, top: 50 });
+  const [position, setPosition] = useState<Position>(defaultPosition);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent): void => {
@@ -57,6 +59,17 @@ const DraggableCardComponent: React.FC<{
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging]);
+
+  const setDefaultPosition = useCallback((): void => {
+    setPosition(defaultPosition);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('resize', setDefaultPosition);
+    return (): void => {
+      window.removeEventListener('resize', setDefaultPosition);
+    };
+  }, [setDefaultPosition]);
 
   const startDrag = (): void => {
     setIsDragging(true);

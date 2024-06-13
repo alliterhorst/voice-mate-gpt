@@ -36,6 +36,7 @@ const DraggableHeader = styled.div<{ theme: Theme }>`
 
 const CardTitle = styled.div<{ theme: Theme }>`
   flex: auto;
+  font-weight: bold;
 `;
 
 const HeaderButton = styled.div<{ theme: Theme }>`
