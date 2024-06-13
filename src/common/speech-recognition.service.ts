@@ -194,7 +194,7 @@ class SpeechRecognitionService {
     const normalizedVolume = Math.round(Math.min(Math.max(volume * 100, 0), 100));
 
     if (normalizedVolume !== this.microphoneVolume) {
-      console.log('Microphone volume:', normalizedVolume);
+      // console.log('Microphone volume:', normalizedVolume);
       this.microphoneVolume = normalizedVolume;
       this.notifyListeners(RecognitionEventEnum.UPDATE_MICROPHONE_VOLUME);
     }

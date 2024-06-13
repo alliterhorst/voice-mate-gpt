@@ -9,6 +9,7 @@ export interface Theme {
     text: string;
     hover: string;
     border: string;
+    backgroundBars: string;
   };
   borderRadius: string;
 }
@@ -24,6 +25,7 @@ export const theme: Theme = {
     text: 'white',
     hover: '#43464a',
     border: 'grey',
+    backgroundBars: '#7F838E',
   },
   borderRadius: '6px',
 };

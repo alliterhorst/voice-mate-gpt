@@ -9,7 +9,6 @@ const DraggableCardContainer = styled.div<{
   border: 1px solid ${(props): string => props.theme.colors.border};
   border-radius: ${(props): string => props.theme.borderRadius};
   width: 300px;
-  height: 100px;
   background-color: ${(props): string => props.theme.colors.background};
   display: flex;
   flex-direction: column;

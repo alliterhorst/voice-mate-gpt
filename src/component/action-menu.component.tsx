@@ -12,6 +12,9 @@ import ButtonComponent from './button.component';
 import { usePlayerContext } from '../context/player.context';
 import { translate } from '../interface/translate.interface';
 import VariantEnum from '../enum/variant.enum';
+import { ContainerColumn, ContainerRow, Divider } from '../style/common.style';
+import VolumeBarsComponent from './volume-bars.component';
+import { useSpeechRecognitionContext } from '../context/speech-recognition.context';
 
 const ActionMenuComponent: React.FC = () => {
   const {
@@ -24,79 +27,91 @@ const ActionMenuComponent: React.FC = () => {
     isOpenSettingsMenu,
     setIsOpenSettingsMenu,
   } = usePlayerContext();
+  const { microphoneVolume } = useSpeechRecognitionContext();
 
   return (
-    <div style={{ display: 'flex', flexGrow: 1, justifyContent: 'space-evenly' }}>
-      {!hasPlayerStarted && (
+    <ContainerColumn>
+      <ContainerRow>
+        {!hasPlayerStarted && (
+          <ButtonComponent
+            onClick={() => startPlayer()}
+            $configButton={{
+              alt: translate.menuPlayer.start,
+              label: translate.menuPlayer.start,
+              icon: faPlay,
+              variant: VariantEnum.PRIMARY,
+            }}
+          />
+        )}
+        {hasPlayerStarted && (
+          <ButtonComponent
+            onClick={() => setIsMicrophoneEnabled(!isMicrophoneEnabled)}
+            $configButton={[
+              {
+                uniqueId: '1',
+                alt: translate.menuPlayer.voiceRecognitionEnabled,
+                icon: faMicrophone,
+                variant: VariantEnum.PRIMARY,
+              },
+              {
+                uniqueId: '2',
+                alt: translate.menuPlayer.voiceRecognitionDisabled,
+                icon: faMicrophoneSlash,
+                variant: VariantEnum.CANCEL,
+              },
+            ]}
+            $currentUniqueId={isMicrophoneEnabled ? '1' : '2'}
+          />
+        )}
+        {hasPlayerStarted && (
+          <ButtonComponent
+            onClick={() => setIsTextToSpeechEnabled(!isTextToSpeechEnabled)}
+            $configButton={[
+              {
+                uniqueId: '1',
+                alt: translate.menuPlayer.textToSpeechEnabled,
+                variant: VariantEnum.PRIMARY,
+                icon: faVolumeUp,
+              },
+              {
+                uniqueId: '2',
+                alt: translate.menuPlayer.textToSpeechDisabled,
+                variant: VariantEnum.CANCEL,
+                icon: faVolumeXmark,
+              },
+            ]}
+            $currentUniqueId={isTextToSpeechEnabled ? '1' : '2'}
+          />
+        )}
+        {hasPlayerStarted && (
+          <ButtonComponent
+            onClick={() => console.log(translate.menuPlayer.skipMessage)}
+            $configButton={{
+              alt: translate.menuPlayer.skipMessage,
+              variant: VariantEnum.PRIMARY,
+              icon: faForward,
+            }}
+          />
+        )}
         <ButtonComponent
-          onClick={() => startPlayer()}
+          onClick={() => setIsOpenSettingsMenu(!isOpenSettingsMenu)}
           $configButton={{
-            alt: translate.menuPlayer.start,
-            label: translate.menuPlayer.start,
-            icon: faPlay,
+            alt: translate.menuPlayer.openSettingsMenu,
             variant: VariantEnum.PRIMARY,
+            icon: faCog,
           }}
         />
-      )}
-      {hasPlayerStarted && (
-        <ButtonComponent
-          onClick={() => setIsMicrophoneEnabled(!isMicrophoneEnabled)}
-          $configButton={[
-            {
-              uniqueId: '1',
-              alt: translate.menuPlayer.voiceRecognitionEnabled,
-              icon: faMicrophone,
-              variant: VariantEnum.PRIMARY,
-            },
-            {
-              uniqueId: '2',
-              alt: translate.menuPlayer.voiceRecognitionDisabled,
-              icon: faMicrophoneSlash,
-              variant: VariantEnum.CANCEL,
-            },
-          ]}
-          $currentUniqueId={isMicrophoneEnabled ? '1' : '2'}
+      </ContainerRow>
+      {isMicrophoneEnabled && <Divider />}
+      {isMicrophoneEnabled && (
+        <VolumeBarsComponent
+          startColor="#E0B44B"
+          endColor="#00FF00"
+          steps={30}
+          currentVolume={microphoneVolume}
         />
       )}
-      {hasPlayerStarted && (
-        <ButtonComponent
-          onClick={() => setIsTextToSpeechEnabled(!isTextToSpeechEnabled)}
-          $configButton={[
-            {
-              uniqueId: '1',
-              alt: translate.menuPlayer.textToSpeechEnabled,
-              variant: VariantEnum.PRIMARY,
-              icon: faVolumeUp,
-            },
-            {
-              uniqueId: '2',
-              alt: translate.menuPlayer.textToSpeechDisabled,
-              variant: VariantEnum.CANCEL,
-              icon: faVolumeXmark,
-            },
-          ]}
-          $currentUniqueId={isTextToSpeechEnabled ? '1' : '2'}
-        />
-      )}
-      {hasPlayerStarted && (
-        <ButtonComponent
-          onClick={() => console.log(translate.menuPlayer.skipMessage)}
-          $configButton={{
-            alt: translate.menuPlayer.skipMessage,
-            variant: VariantEnum.PRIMARY,
-            icon: faForward,
-          }}
-        />
-      )}
-      <ButtonComponent
-        onClick={() => setIsOpenSettingsMenu(!isOpenSettingsMenu)}
-        $configButton={{
-          alt: translate.menuPlayer.openSettingsMenu,
-          variant: VariantEnum.PRIMARY,
-          icon: faCog,
-        }}
-      />
-    </div>
+    </ContainerColumn>
   );
 };
 
