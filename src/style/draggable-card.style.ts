@@ -36,7 +36,6 @@ const DraggableHeader = styled.div<{ theme: Theme }>`
 
 const CardTitle = styled.div<{ theme: Theme }>`
   flex: auto;
-  padding-top: 4px;
 `;
 
 const HeaderButton = styled.div<{ theme: Theme }>`

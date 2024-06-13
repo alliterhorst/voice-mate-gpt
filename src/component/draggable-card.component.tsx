@@ -8,6 +8,9 @@ import {
   DraggableCardContainer,
   DraggableHeader,
 } from '../style/draggable-card.style';
+import ConfigEnum from '../enum/config.enum';
+import { translate } from '../interface/translate.interface';
+import { theme } from '../theme/theme';
 
 type Position = {
   right: number;
@@ -64,15 +67,28 @@ const DraggableCardComponent: React.FC<{
       <CardHeader>
         <DraggableHeader onMouseDown={startDrag}>
           <FontAwesomeIcon
-            style={{ position: 'relative', left: '8px', marginRight: '-10px', width: '20px' }}
+            style={{ position: 'relative', left: '8px', marginRight: '-10px', height: '16px' }}
             icon={faGripHorizontal}
           />
           <CardTitle>{title}</CardTitle>
         </DraggableHeader>
-        <FontAwesomeIcon
-          style={{ position: 'relative', left: '-10px', top: '10px' }}
-          icon={faArrowUpRightFromSquare}
-        />
+        <a
+          aria-label={translate.menuPlayer.visitProjectWebsite}
+          href={ConfigEnum.GIT_URL}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <FontAwesomeIcon
+            style={{
+              position: 'relative',
+              left: '-10px',
+              top: '10px',
+              height: '16px',
+              color: theme.colors.text,
+            }}
+            icon={faArrowUpRightFromSquare}
+          />
+        </a>
       </CardHeader>
       <CardContent>{children}</CardContent>
     </DraggableCardContainer>

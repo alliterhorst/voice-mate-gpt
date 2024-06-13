@@ -34,7 +34,9 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
       title={currentConfig.alt}
       $hasLabel={!!currentConfig.label}
     >
-      {currentConfig.icon && <FontAwesomeIcon icon={currentConfig.icon} />}
+      {currentConfig.icon && (
+        <FontAwesomeIcon icon={currentConfig.icon} style={{ height: '18px' }} />
+      )}
       {!!currentConfig.label && (
         <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: 'bold' }}>
           {currentConfig.label}

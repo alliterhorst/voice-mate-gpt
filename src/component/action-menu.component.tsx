@@ -99,6 +99,7 @@ const ActionMenuComponent: React.FC = () => {
             alt: translate.menuPlayer.openSettingsMenu,
             variant: VariantEnum.PRIMARY,
             icon: faCog,
+            ...(hasPlayerStarted ? {} : { label: translate.menuPlayer.configurations }),
           }}
         />
       </ContainerRow>
