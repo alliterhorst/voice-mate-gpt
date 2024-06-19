@@ -45,11 +45,11 @@ const download = (): void => {
 
         mediaRecorder.onstop = (): void => {
           console.log('Recording stopped');
-          const blob = new Blob(chunks, { type: 'audio/mp3' });
+          const blob = new Blob(chunks, { type: 'audio/wav' });
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = 'recorded_audio.mp3';
+          link.download = 'recorded_audio.wav';
           document.body.appendChild(link);
           link.click();
           console.log('link:', link);
@@ -86,3 +86,12 @@ const download = (): void => {
 
 // Chame a função de download para iniciar o monitoramento
 download();
+
+// Abaixo como reproduzir audio do gpt, o primeiro index 0 vira o ultimo elemento encontrado, já o segundo permanece o mesmo, porém deve ter 4 ocorrências de botões
+// document.querySelectorAll('.relative.flex.w-full.min-w-0.flex-col.agent-turn:last-of-type')[0].querySelectorAll('button.text-token-text-secondary')[0].click()
+
+/*
+  -- Algoritmo para pegar o texto do chat, neste retorno é possível remover as tags <pre> que contém os blocos de código
+
+  document.querySelectorAll('.relative.flex.w-full.min-w-0.flex-col.agent-turn:last-of-type')[7].querySelector('.items-start').querySelector('.markdown').children.filter((el) => el.tagName !== 'PRE').map((el) => el.innerText).join('\n')
+*/

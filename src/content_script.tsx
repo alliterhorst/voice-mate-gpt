@@ -8,7 +8,7 @@ import DraggableCardComponent from './component/draggable-card.component';
 import ActionMenuComponent from './component/action-menu.component';
 import ConfigEnum from './enum/config.enum';
 import { SpeechRecognitionProvider } from './context/speech-recognition.context';
-import './common/speech-recognition.service';
+import './service/speech-recognition.service';
 import './common/audio-downloader.common';
 
 window.onload = (): void => {

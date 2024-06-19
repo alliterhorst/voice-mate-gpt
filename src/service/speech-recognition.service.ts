@@ -1,15 +1,12 @@
 import { defaultRecognitionLanguage } from '../config/speech-recognition-languages.config';
 import RecognitionEventEnum from '../enum/recognition-event.enum';
+import ListenerService from './listener.service';
 
-type SpeechRecognitionListener = (
-  service: SpeechRecognitionService,
-  recognitionEventEnum: RecognitionEventEnum,
-) => void;
-
-class SpeechRecognitionService {
+class SpeechRecognitionService extends ListenerService<
+  SpeechRecognitionService,
+  RecognitionEventEnum
+> {
   private recognition: SpeechRecognition | null;
-
-  private listeners: SpeechRecognitionListener[];
 
   private isListening: boolean;
 
@@ -32,8 +29,8 @@ class SpeechRecognitionService {
   private microphoneVolume: number;
 
   constructor() {
+    super();
     this.recognition = null;
-    this.listeners = [];
     this.isListening = false;
     this.transcript = '';
     this.error = '';
@@ -66,25 +63,25 @@ class SpeechRecognitionService {
 
     this.recognition.onstart = (): void => {
       this.isListening = true;
-      this.notifyListeners();
+      this.notifyListeners(RecognitionEventEnum.UPDATE_TRANSCRIPT);
     };
 
     this.recognition.onend = (): void => {
       this.isListening = false;
       this.stopAudioCapture();
       console.log('SpeechRecognitionService onend');
-      this.notifyListeners();
+      this.notifyListeners(RecognitionEventEnum.UPDATE_TRANSCRIPT);
     };
 
     this.recognition.onerror = (event: SpeechRecognitionErrorEvent): void => {
       this.isListening = false;
       this.error = `Error occurred in speech recognition: ${event.error}`;
-      this.notifyListeners();
+      this.notifyListeners(RecognitionEventEnum.UPDATE_TRANSCRIPT);
     };
 
     this.recognition.onresult = (event: SpeechRecognitionEvent): void => {
       this.transcript = event.results[event.results.length - 1][0].transcript || '';
-      this.notifyListeners();
+      this.notifyListeners(RecognitionEventEnum.UPDATE_TRANSCRIPT);
     };
   }
 
@@ -200,20 +197,6 @@ class SpeechRecognitionService {
     }
 
     requestAnimationFrame(() => this.analyseAudio());
-  }
-
-  subscribe(listener: SpeechRecognitionListener): void {
-    this.listeners.push(listener);
-  }
-
-  unsubscribe(listener: SpeechRecognitionListener): void {
-    this.listeners = this.listeners.filter(l => l !== listener);
-  }
-
-  private notifyListeners(
-    recognitionEventEnum: RecognitionEventEnum = RecognitionEventEnum.UPDATE_TRANSCRIPT,
-  ): void {
-    this.listeners.forEach(listener => listener(this, recognitionEventEnum));
   }
 
   getIsListening(): boolean {
