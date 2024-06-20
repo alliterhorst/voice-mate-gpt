@@ -1,5 +1,7 @@
 # Voice Mate GPT for OpenAI Chat
 
+![Status do Projeto](https://img.shields.io/badge/status-em%20construção-orange)
+
 ## English
 
 ### Description
@@ -27,6 +29,10 @@ We invite developers and enthusiasts to contribute to Voice Mate GPT.
 ### License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### Under Construction
+
+⚠️ **This project is currently under construction. Some features may not be complete or fully functional yet. Please check back later for updates.**
 
 ## Testing
 
@@ -69,6 +75,10 @@ Convidamos desenvolvedores e entusiastas para contribuir com o Voice Mate GPT.
 ### Licença
 
 Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+### Em Construção
+
+⚠️ **Este projeto está atualmente em construção. Algumas funcionalidades podem não estar completas ou totalmente funcionais ainda. Por favor, volte mais tarde para atualizações.**
 
 ## Testando
 
