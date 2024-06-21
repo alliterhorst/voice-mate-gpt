@@ -63,20 +63,20 @@ class SpeechRecognitionService extends ListenerService<
 
     this.recognition.onstart = (): void => {
       this.isListening = true;
-      this.notifyListeners(RecognitionEventEnum.UPDATE_TRANSCRIPT);
+      this.notifyListeners(RecognitionEventEnum.UPDATE_IS_LISTENING);
     };
 
     this.recognition.onend = (): void => {
       this.isListening = false;
       this.stopAudioCapture();
       console.log('SpeechRecognitionService onend');
-      this.notifyListeners(RecognitionEventEnum.UPDATE_TRANSCRIPT);
+      this.notifyListeners(RecognitionEventEnum.UPDATE_IS_LISTENING);
     };
 
     this.recognition.onerror = (event: SpeechRecognitionErrorEvent): void => {
       this.isListening = false;
       this.error = `Error occurred in speech recognition: ${event.error}`;
-      this.notifyListeners(RecognitionEventEnum.UPDATE_TRANSCRIPT);
+      this.notifyListeners(RecognitionEventEnum.UPDATE_ERROR);
     };
 
     this.recognition.onresult = (event: SpeechRecognitionEvent): void => {

@@ -14,13 +14,17 @@ import RecognitionEventEnum from '../enum/recognition-event.enum';
 
 const businessContext = 'SpeechRecognition';
 
+interface Transcript {
+  text: string;
+  transcriptAt: string;
+}
+
 interface SpeechRecognitionContextInterface {
   isListening: boolean;
   startSpeechRecognition: () => void;
   stopSpeechRecognition: () => void;
   changeLanguage: (lang: string) => void;
-  transcript: string;
-  microphoneVolume: number;
+  transcript: Transcript | null;
   error: string;
 }
 
@@ -30,9 +34,8 @@ export function SpeechRecognitionProvider({ children }: { children: ReactNode })
   const { isMicrophoneEnabled } = usePlayerContext();
   const { recognitionLanguage } = useOptionContext();
   const [isListening, setIsListening] = useState<boolean>(false);
-  const [transcript, setTranscript] = useState<string>('');
+  const [transcript, setTranscript] = useState<Transcript | null>(null);
   const [error, setError] = useState<string>('');
-  const [microphoneVolume, setMicrophoneVolume] = useState<number>(0);
 
   const startSpeechRecognition = useCallback(() => {
     window.SpeechRecognitionService.start();
@@ -51,16 +54,30 @@ export function SpeechRecognitionProvider({ children }: { children: ReactNode })
       service: typeof window.SpeechRecognitionService,
       recognitionEventEnum: RecognitionEventEnum,
     ): void => {
-      if (recognitionEventEnum === RecognitionEventEnum.UPDATE_MICROPHONE_VOLUME) {
-        setMicrophoneVolume(service.getMicrophoneVolume());
-      } else {
-        setIsListening(service.getIsListening());
-        setTranscript(service.getTranscript());
-        setError(service.getError());
+      switch (recognitionEventEnum) {
+        case RecognitionEventEnum.UPDATE_TRANSCRIPT:
+          setTranscript({
+            text: service.getTranscript()?.trim(),
+            transcriptAt: new Date().toISOString(),
+          });
+          break;
+        case RecognitionEventEnum.UPDATE_IS_LISTENING:
+          setIsListening(service.getIsListening());
+          break;
+        case RecognitionEventEnum.UPDATE_ERROR:
+          setError(service.getError());
+          break;
+        default:
+          console.info('Other recognition event:', recognitionEventEnum);
+          break;
       }
     };
 
-    window.SpeechRecognitionService.subscribe(handleStateChange);
+    window.SpeechRecognitionService.subscribe(handleStateChange, [
+      RecognitionEventEnum.UPDATE_TRANSCRIPT,
+      RecognitionEventEnum.UPDATE_IS_LISTENING,
+      RecognitionEventEnum.UPDATE_ERROR,
+    ]);
     return (): void => {
       window.SpeechRecognitionService.unsubscribe(handleStateChange);
     };
@@ -79,7 +96,7 @@ export function SpeechRecognitionProvider({ children }: { children: ReactNode })
   }, [recognitionLanguage.code, changeLanguage]);
 
   useEffect(() => {
-    console.log('Transcript:', transcript);
+    console.log('Transcript:', transcript?.text);
   }, [transcript]);
 
   const value = useMemo<SpeechRecognitionContextInterface>(
@@ -89,18 +106,9 @@ export function SpeechRecognitionProvider({ children }: { children: ReactNode })
       stopSpeechRecognition,
       changeLanguage,
       transcript,
-      microphoneVolume,
       error,
     }),
-    [
-      isListening,
-      startSpeechRecognition,
-      stopSpeechRecognition,
-      changeLanguage,
-      transcript,
-      microphoneVolume,
-      error,
-    ],
+    [isListening, startSpeechRecognition, stopSpeechRecognition, changeLanguage, transcript, error],
   );
 
   return (

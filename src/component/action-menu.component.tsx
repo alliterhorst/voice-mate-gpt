@@ -14,7 +14,6 @@ import { translate } from '../interface/translate.interface';
 import VariantEnum from '../enum/variant.enum';
 import { ContainerColumn, ContainerRow, Divider } from '../style/common.style';
 import VolumeBarsComponent from './volume-bars.component';
-import { useSpeechRecognitionContext } from '../context/speech-recognition.context';
 
 const ActionMenuComponent: React.FC = () => {
   const {
@@ -27,7 +26,6 @@ const ActionMenuComponent: React.FC = () => {
     isOpenSettingsMenu,
     setIsOpenSettingsMenu,
   } = usePlayerContext();
-  const { microphoneVolume } = useSpeechRecognitionContext();
 
   return (
     <ContainerColumn>
@@ -105,12 +103,7 @@ const ActionMenuComponent: React.FC = () => {
       </ContainerRow>
       {isMicrophoneEnabled && <Divider />}
       {isMicrophoneEnabled && (
-        <VolumeBarsComponent
-          startColor="#E0B44B"
-          endColor="#00FF00"
-          steps={30}
-          currentVolume={microphoneVolume}
-        />
+        <VolumeBarsComponent startColor="#E0B44B" endColor="#00FF00" steps={30} />
       )}
     </ContainerColumn>
   );

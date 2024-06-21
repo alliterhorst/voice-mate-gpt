@@ -8,8 +8,7 @@ import DraggableCardComponent from './component/draggable-card.component';
 import ActionMenuComponent from './component/action-menu.component';
 import ConfigEnum from './enum/config.enum';
 import { SpeechRecognitionProvider } from './context/speech-recognition.context';
-import './service/speech-recognition.service';
-import './common/audio-downloader.common';
+import './service/orchestration.service';
 
 window.onload = (): void => {
   const reactAppWrapper = document.createElement('div');
