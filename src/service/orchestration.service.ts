@@ -9,8 +9,11 @@ enum OrchestrationEventEnum {
 }
 
 class OrchestrationService extends ListenerService<OrchestrationService, OrchestrationEventEnum> {
+  private currentPath: string;
+
   constructor() {
     super();
+    this.currentPath = window.location.pathname;
     this.init();
   }
 
@@ -31,4 +34,4 @@ class OrchestrationService extends ListenerService<OrchestrationService, Orchest
   };
 }
 
-window.OrchestrationService = new OrchestrationService();
+export default OrchestrationService;

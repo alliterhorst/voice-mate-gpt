@@ -15,15 +15,19 @@ class DOMManipulationService extends ListenerService<
 > {
   private chatHelper: AbstractChatHelper | null;
 
+  private currentPath: string;
+
   constructor() {
     super();
     this.chatHelper = null;
+    this.currentPath = window.location.pathname;
     this.init();
   }
 
   private init(): void {
     this.chatHelper = new ChatGPTHelper();
     console.log('DOMManipulationService init', this.chatHelper);
+    this.observePathChanges();
   }
 
   updatePrompt(text: string): void {
@@ -48,6 +52,41 @@ class DOMManipulationService extends ListenerService<
     console.log('DOMManipulationService rollDown');
     this.chatHelper?.rollDown();
     this.notifyListeners(DOMManipulationEventEnum.ROLLED_DOWN);
+  }
+
+  private observePathChanges(): void {
+    const handleUrlChange = (): void => {
+      const newPath = window.location.pathname;
+      if (this.currentPath !== newPath) {
+        console.log(`Path changed from ${this.currentPath} to ${newPath}`);
+        this.currentPath = newPath;
+        this.chatHelper?.changePathURL(newPath);
+      }
+    };
+
+    window.addEventListener('popstate', handleUrlChange);
+
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function pushState(
+      state: unknown,
+      title: string,
+      url?: string | URL | null | undefined,
+    ): void {
+      originalPushState.apply(window.history, [state, title, url]);
+      handleUrlChange();
+    };
+
+    const originalReplaceState = window.history.replaceState;
+    window.history.replaceState = function replaceState(
+      state: unknown,
+      title: string,
+      url?: string | URL | null | undefined,
+    ): void {
+      originalReplaceState.apply(window.history, [state, title, url]);
+      handleUrlChange();
+    };
+
+    handleUrlChange();
   }
 }
 

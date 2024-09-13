@@ -434,6 +434,8 @@ export default [
     attributeValue: null,
   },
   {
+    // Indica da resposta do chat, removendo a classe "result-streaming"
+    // Após esse evento ocorrer, surgirão os botões de ação, podemos monitorar div da ultima mensagem enviada esperando o surgimento dos botões
     type: 'attributes',
     target: '<div class="markdown prose w-full break-words dark:prose-invert dark"></div>',
     addedNodes: [],

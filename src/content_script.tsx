@@ -8,29 +8,32 @@ import DraggableCardComponent from './component/draggable-card.component';
 import ActionMenuComponent from './component/action-menu.component';
 import ConfigEnum from './enum/config.enum';
 import { SpeechRecognitionProvider } from './context/speech-recognition.context';
-import './service/orchestration.service';
+import OrchestrationService from './service/orchestration.service';
 
 window.onload = (): void => {
-  const reactAppWrapper = document.createElement('div');
-  document.body.appendChild(reactAppWrapper);
-  const root = createRoot(reactAppWrapper);
-  root.render(
-    <React.StrictMode>
-      <ThemeProvider theme={theme}>
-        <OptionProvider>
-          <PlayerProvider>
-            <SpeechRecognitionProvider>
-              <div>
-                <DraggableCardComponent
-                  title={`${ConfigEnum.PROJECT_NAME} - ${ConfigEnum.VERSION}`}
-                >
-                  <ActionMenuComponent />
-                </DraggableCardComponent>
-              </div>
-            </SpeechRecognitionProvider>
-          </PlayerProvider>
-        </OptionProvider>
-      </ThemeProvider>
-    </React.StrictMode>,
-  );
+  setTimeout(() => {
+    window.OrchestrationService = new OrchestrationService();
+    const reactAppWrapper = document.createElement('div');
+    document.body.appendChild(reactAppWrapper);
+    const root = createRoot(reactAppWrapper);
+    root.render(
+      <React.StrictMode>
+        <ThemeProvider theme={theme}>
+          <OptionProvider>
+            <PlayerProvider>
+              <SpeechRecognitionProvider>
+                <div>
+                  <DraggableCardComponent
+                    title={`${ConfigEnum.PROJECT_NAME} - ${ConfigEnum.VERSION}`}
+                  >
+                    <ActionMenuComponent />
+                  </DraggableCardComponent>
+                </div>
+              </SpeechRecognitionProvider>
+            </PlayerProvider>
+          </OptionProvider>
+        </ThemeProvider>
+      </React.StrictMode>,
+    );
+  }, 1000);
 };

@@ -20,6 +20,12 @@ export interface TranslateInterface {
     clickButtonBelowOrSpeakThePauseWordToResume: string;
     resume: string;
   };
+  configuration: {
+    // what is your language?
+    whatIsYourLanguage: string;
+    // confirm your language:
+    confirmYourLanguage: string;
+  };
 }
 
 export const translateEN: TranslateInterface = {
@@ -38,6 +44,10 @@ export const translateEN: TranslateInterface = {
     clickButtonBelowOrSpeakThePauseWordToResume:
       'Click button below or speak the pause word to resume',
     resume: 'Resume',
+  },
+  configuration: {
+    whatIsYourLanguage: 'What is your language?',
+    confirmYourLanguage: 'Confirm your language:',
   },
 };
 
@@ -58,6 +68,10 @@ export const translatePT: TranslateInterface = {
     clickButtonBelowOrSpeakThePauseWordToResume:
       'Clique no botão abaixo ou fale a palavra de pausa para retomar',
     resume: 'Retomar',
+  },
+  configuration: {
+    whatIsYourLanguage: 'Qual é o seu idioma?',
+    confirmYourLanguage: 'Confirme seu idioma:',
   },
 };
 

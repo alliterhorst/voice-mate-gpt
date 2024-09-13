@@ -41,6 +41,7 @@ abstract class AbstractChatHelper {
   abstract updatePrompt(text: string): void;
   abstract sendMessage(): void;
   abstract rollDown(): void;
+  abstract changePathURL(currentPath: string, oldPath?: string): void;
 }
 
 export default AbstractChatHelper;

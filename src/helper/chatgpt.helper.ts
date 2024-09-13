@@ -81,6 +81,11 @@ class ChatGPTHelper extends AbstractChatHelper {
     this.updateScrollBottomElement();
     this.scrollBottomElement?.click();
   }
+
+  changePathURL(currentPath: string): void {
+    console.log('ChatGPTHelper changePathURL', currentPath);
+    this.init();
+  }
 }
 
 export default ChatGPTHelper;
