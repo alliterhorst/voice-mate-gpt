@@ -38,20 +38,20 @@ export function SpeechRecognitionProvider({ children }: { children: ReactNode })
   const [error, setError] = useState<string>('');
 
   const startSpeechRecognition = useCallback(() => {
-    window.SpeechRecognitionService.start();
+    window.VoiceMateGPT.SpeechRecognitionService.start();
   }, []);
 
   const stopSpeechRecognition = useCallback(() => {
-    window.SpeechRecognitionService.stop(true);
+    window.VoiceMateGPT.SpeechRecognitionService.stop(true);
   }, []);
 
   const changeLanguage = useCallback((lang: string) => {
-    window.SpeechRecognitionService.changeLanguage(lang);
+    window.VoiceMateGPT.SpeechRecognitionService.changeLanguage(lang);
   }, []);
 
   useEffect(() => {
     const handleStateChange = (
-      service: typeof window.SpeechRecognitionService,
+      service: typeof window.VoiceMateGPT.SpeechRecognitionService,
       recognitionEventEnum: RecognitionEventEnum,
     ): void => {
       switch (recognitionEventEnum) {
@@ -73,13 +73,13 @@ export function SpeechRecognitionProvider({ children }: { children: ReactNode })
       }
     };
 
-    window.SpeechRecognitionService.subscribe(handleStateChange, [
+    window.VoiceMateGPT.SpeechRecognitionService.subscribe(handleStateChange, [
       RecognitionEventEnum.UPDATE_TRANSCRIPT,
       RecognitionEventEnum.UPDATE_IS_LISTENING,
       RecognitionEventEnum.UPDATE_ERROR,
     ]);
     return (): void => {
-      window.SpeechRecognitionService.unsubscribe(handleStateChange);
+      window.VoiceMateGPT.SpeechRecognitionService.unsubscribe(handleStateChange);
     };
   }, []);
 

@@ -15,7 +15,7 @@ const VolumeBarsComponent: React.FC<VolumeBarsProps> = ({ startColor, endColor, 
 
   useEffect(() => {
     const handleStateChange = (
-      service: typeof window.SpeechRecognitionService,
+      service: typeof window.VoiceMateGPT.SpeechRecognitionService,
       recognitionEventEnum: RecognitionEventEnum,
     ): void => {
       if (recognitionEventEnum === RecognitionEventEnum.UPDATE_MICROPHONE_VOLUME) {
@@ -23,11 +23,11 @@ const VolumeBarsComponent: React.FC<VolumeBarsProps> = ({ startColor, endColor, 
       }
     };
 
-    window.SpeechRecognitionService.subscribe(handleStateChange, [
+    window.VoiceMateGPT.SpeechRecognitionService.subscribe(handleStateChange, [
       RecognitionEventEnum.UPDATE_MICROPHONE_VOLUME,
     ]);
     return (): void => {
-      window.SpeechRecognitionService.unsubscribe(handleStateChange);
+      window.VoiceMateGPT.SpeechRecognitionService.unsubscribe(handleStateChange);
     };
   }, []);
 

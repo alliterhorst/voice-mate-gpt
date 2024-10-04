@@ -1,3 +1,4 @@
+import HostnameEnum from '../enum/hostname.enum';
 import AbstractChatHelper from '../helper/abstract-chat.helper';
 import ChatGPTHelper from '../helper/chatgpt.helper';
 import ListenerService from './listener.service';
@@ -9,23 +10,40 @@ enum DOMManipulationEventEnum {
   ROLLED_DOWN = 'ROLLED_DOWN',
 }
 
+enum DOMStatusEnum {
+  LOADING = 'LOADING',
+  READY = 'READY',
+}
+
 class DOMManipulationService extends ListenerService<
   DOMManipulationService,
   DOMManipulationEventEnum
 > {
   private chatHelper: AbstractChatHelper | null;
 
+  private currentHost: string;
+
   private currentPath: string;
+
+  public status: DOMStatusEnum = DOMStatusEnum.LOADING;
 
   constructor() {
     super();
     this.chatHelper = null;
+    this.currentHost = window.location.host;
     this.currentPath = window.location.pathname;
     this.init();
   }
 
   private init(): void {
-    this.chatHelper = new ChatGPTHelper();
+    switch (this.currentHost) {
+      case HostnameEnum.CHATGPT:
+      case HostnameEnum.PAGE_TEST_GPT:
+        this.chatHelper = new ChatGPTHelper();
+        break;
+      default:
+        break;
+    }
     console.log('DOMManipulationService init', this.chatHelper);
     this.observePathChanges();
   }
@@ -34,6 +52,7 @@ class DOMManipulationService extends ListenerService<
     console.log('DOMManipulationService updatePrompt', text);
     this.chatHelper?.updatePrompt(text);
     this.notifyListeners(DOMManipulationEventEnum.UPDATED_PROMPT);
+    this.sendMessage();
   }
 
   sendMessage(): void {
@@ -90,4 +109,4 @@ class DOMManipulationService extends ListenerService<
   }
 }
 
-window.DOMManipulationService = new DOMManipulationService();
+export default DOMManipulationService;

@@ -8,8 +8,8 @@ class ChatGPTHelper extends AbstractChatHelper {
 
   private init(): void {
     console.log('ChatGPTHelper init', this);
-    this.promptElement = document.querySelector('textarea#prompt-textarea');
-    this.sendButtonElement = document.querySelector('button[data-testid="fruitjuice-send-button"]');
+    this.promptElement = document.querySelector('#prompt-textarea');
+    this.sendButtonElement = document.querySelector('button[data-testid="send-button"]');
     this.messageGroupElement = document.querySelector('[role="presentation"]')?.children[0]
       ?.children[0]?.children[0]?.children[0] as HTMLElement;
     this.updateScrollBottomElement();
@@ -37,28 +37,27 @@ class ChatGPTHelper extends AbstractChatHelper {
 
   updatePrompt(text: string): void {
     console.log('ChatGPTHelper updatePrompt', this.promptElement);
-    if (!this.promptElement) throw new Error('Prompt element not found');
+    if (!this.promptElement) {
+      this.promptElement = document.querySelector('#prompt-textarea');
+      if (!this.promptElement) throw new Error('Prompt element not found');
+    }
 
-    const textArea = this.promptElement as HTMLTextAreaElement;
-    const existingText = textArea.value;
+    const promptDiv = this.promptElement as HTMLElement;
+    const existingText = promptDiv.innerText;
     const fullText = existingText ? `${existingText} ${text}` : text;
 
-    textArea.focus();
-    textArea.value = fullText;
+    promptDiv.focus();
+    promptDiv.innerText = fullText;
+
     const event = new Event('input', { bubbles: true });
-    textArea.dispatchEvent(event);
-
-    const rows = Math.ceil(fullText.length / 88);
-    const height = rows * 24;
-    textArea.style.height = `${height}px`;
-
-    this.enableSendButton();
+    promptDiv.dispatchEvent(event);
   }
 
   sendMessage(): void {
     console.log('ChatGPTHelper sendMessage', this.promptElement);
-    this.enableSendButton();
-    this.sendButtonElement?.click();
+    setTimeout(() => {
+      (document.querySelector('button[data-testid="send-button"]') as HTMLButtonElement)?.click();
+    }, 500);
     this.rollDown();
   }
 
@@ -66,14 +65,15 @@ class ChatGPTHelper extends AbstractChatHelper {
     console.log('ChatGPTHelper clearPrompt', this.promptElement);
     if (!this.promptElement) throw new Error('Prompt element not found');
 
-    const textArea = this.promptElement as HTMLTextAreaElement;
+    const promptDiv = this.promptElement as HTMLElement;
 
-    if (!textArea.value) return;
+    if (!promptDiv.innerText) return;
 
-    textArea.focus();
-    textArea.value = '';
+    promptDiv.focus();
+    promptDiv.innerText = '';
+
     const event = new Event('input', { bubbles: true });
-    textArea.dispatchEvent(event);
+    promptDiv.dispatchEvent(event);
   }
 
   rollDown(): void {

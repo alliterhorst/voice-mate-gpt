@@ -216,4 +216,4 @@ class SpeechRecognitionService extends ListenerService<
   }
 }
 
-window.SpeechRecognitionService = new SpeechRecognitionService();
+export default SpeechRecognitionService;
