@@ -7,12 +7,24 @@ class ChatGPTHelper extends AbstractChatHelper {
     this.init();
   }
 
-  private init(): void {
-    console.log('ChatGPTHelper init', this);
+  private loadPromptElement(): void {
     this.promptElement = document.querySelector('#prompt-textarea');
+  }
+
+  private loadSendButtonElement(): void {
     this.sendButtonElement = document.querySelector('button[data-testid="send-button"]');
+  }
+
+  private loadMessageGroupElement(): void {
     this.messageGroupElement = document.querySelector('[role="presentation"]')?.children[0]
       ?.children[0]?.children[0]?.children[0] as HTMLElement;
+  }
+
+  private init(): void {
+    console.log('ChatGPTHelper init', this);
+    this.loadPromptElement();
+    this.loadSendButtonElement();
+    this.loadMessageGroupElement();
     this.updateScrollBottomElement();
     this.updateLastMessageElement();
   }
@@ -31,16 +43,19 @@ class ChatGPTHelper extends AbstractChatHelper {
   }
 
   private enableSendButton(): void {
+    this.loadSendButtonElement();
     if (!this.sendButtonElement) throw new Error('Send button element not found');
     this.sendButtonElement.removeAttribute('disabled');
     this.sendButtonElement.classList.remove('disabled');
   }
 
   getPromptElement(): HTMLElement | null {
-    return document.querySelector('#prompt-textarea');
+    this.loadPromptElement();
+    return this.promptElement;
   }
 
   updatePrompt(text: string): void {
+    this.loadPromptElement();
     console.log('ChatGPTHelper updatePrompt', this.promptElement);
     if (!this.promptElement) {
       this.promptElement = document.querySelector('#prompt-textarea');
@@ -59,14 +74,14 @@ class ChatGPTHelper extends AbstractChatHelper {
   }
 
   sendMessage(): void {
+    this.loadSendButtonElement();
     console.log('ChatGPTHelper sendMessage', this.promptElement);
-    setTimeout(() => {
-      (document.querySelector('button[data-testid="send-button"]') as HTMLButtonElement)?.click();
-    }, 500);
+    this.sendButtonElement?.click();
     this.rollDown();
   }
 
   clearPrompt(): void {
+    this.loadPromptElement();
     console.log('ChatGPTHelper clearPrompt', this.promptElement);
     if (!this.promptElement) throw new Error('Prompt element not found');
 
