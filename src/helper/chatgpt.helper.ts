@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import AbstractChatHelper from './abstract-chat.helper';
 
 class ChatGPTHelper extends AbstractChatHelper {
@@ -33,6 +34,10 @@ class ChatGPTHelper extends AbstractChatHelper {
     if (!this.sendButtonElement) throw new Error('Send button element not found');
     this.sendButtonElement.removeAttribute('disabled');
     this.sendButtonElement.classList.remove('disabled');
+  }
+
+  getPromptElement(): HTMLElement | null {
+    return document.querySelector('#prompt-textarea');
   }
 
   updatePrompt(text: string): void {
@@ -85,6 +90,24 @@ class ChatGPTHelper extends AbstractChatHelper {
   changePathURL(currentPath: string): void {
     console.log('ChatGPTHelper changePathURL', currentPath);
     this.init();
+  }
+
+  whenHydrationCompleted(callback: () => void): void {
+    if (this.getPromptElement()) {
+      callback();
+      return;
+    }
+    const observer = new MutationObserver((mutations, obs) => {
+      const hydrationCompleted = mutations.some(
+        mutation => mutation.type === 'childList' && this.getPromptElement(),
+      );
+      if (hydrationCompleted) {
+        obs.disconnect();
+        callback();
+      }
+    });
+
+    observer.observe(document.documentElement, { childList: true, subtree: true });
   }
 }
 

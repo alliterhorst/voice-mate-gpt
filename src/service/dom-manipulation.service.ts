@@ -73,6 +73,10 @@ class DOMManipulationService extends ListenerService<
     this.notifyListeners(DOMManipulationEventEnum.ROLLED_DOWN);
   }
 
+  whenHydrationCompleted(callback: () => void): void {
+    if (this.chatHelper) this.chatHelper.whenHydrationCompleted(callback);
+  }
+
   private observePathChanges(): void {
     const handleUrlChange = (): void => {
       const newPath = window.location.pathname;

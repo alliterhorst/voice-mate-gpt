@@ -37,6 +37,8 @@ abstract class AbstractChatHelper {
     return this.lastMessageElement;
   }
 
+  abstract whenHydrationCompleted(callback: () => void): void;
+
   abstract clearPrompt(): void;
   abstract updatePrompt(text: string): void;
   abstract sendMessage(): void;
