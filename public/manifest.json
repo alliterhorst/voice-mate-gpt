@@ -35,6 +35,6 @@
     "service_worker": "js/background.js"
   },
 
-  "permissions": ["storage", "webRequest", "offscreen"],
+  "permissions": ["storage", "webRequest", "tabs", "offscreen"],
   "host_permissions": ["https://chat.openai.com/*", "https://chatgpt.com/*"]
 }

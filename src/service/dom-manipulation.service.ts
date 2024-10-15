@@ -1,4 +1,5 @@
 import HostnameEnum from '../enum/hostname.enum';
+import StreamEventEnum from '../enum/stream-event.enum';
 import AbstractChatHelper from '../helper/abstract-chat.helper';
 import ChatGPTHelper from '../helper/chatgpt.helper';
 import ListenerService from './listener.service';
@@ -8,6 +9,8 @@ enum DOMManipulationEventEnum {
   UPDATED_PROMPT = 'UPDATED_PROMPT',
   CLEAN_PROMPT = 'CLEAN_PROMPT',
   ROLLED_DOWN = 'ROLLED_DOWN',
+  STREAM_STARTED = 'STREAM_STARTED',
+  STREAM_COMPLETED = 'STREAM_COMPLETED',
 }
 
 enum DOMStatusEnum {
@@ -45,6 +48,8 @@ class DOMManipulationService extends ListenerService<
         break;
     }
     console.log('DOMManipulationService init', this.chatHelper);
+
+    this.observeBackgroundMessages();
     this.observePathChanges();
   }
 
@@ -75,6 +80,32 @@ class DOMManipulationService extends ListenerService<
 
   whenHydrationCompleted(callback: () => void): void {
     if (this.chatHelper) this.chatHelper.whenHydrationCompleted(callback);
+  }
+
+  private streamStarted(): void {
+    console.log('Stream started');
+    this.notifyListeners(DOMManipulationEventEnum.STREAM_STARTED);
+  }
+
+  private streamCompleted(): void {
+    console.log('Stream completed');
+    if (this.chatHelper?.hasNativeTextToSpeech) this.chatHelper.playNativeTextToSpeech();
+    this.notifyListeners(DOMManipulationEventEnum.STREAM_COMPLETED);
+  }
+
+  private observeBackgroundMessages(): void {
+    chrome.runtime.onMessage.addListener(message => {
+      switch (message.type) {
+        case StreamEventEnum.STREAM_STARTED:
+          this.streamStarted();
+          break;
+        case StreamEventEnum.STREAM_COMPLETED:
+          this.streamCompleted();
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   private observePathChanges(): void {

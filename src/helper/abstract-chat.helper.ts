@@ -9,6 +9,8 @@ abstract class AbstractChatHelper {
 
   protected lastMessageElement: HTMLElement | null;
 
+  readonly hasNativeTextToSpeech: boolean = false;
+
   constructor() {
     this.promptElement = null;
     this.sendButtonElement = null;
@@ -35,6 +37,10 @@ abstract class AbstractChatHelper {
 
   getLastMessageElement(): HTMLElement | null {
     return this.lastMessageElement;
+  }
+
+  playNativeTextToSpeech(): void {
+    console.log('playNativeTextToSpeech - hasNativeTextToSpeech:', this.hasNativeTextToSpeech);
   }
 
   abstract whenHydrationCompleted(callback: () => void): void;

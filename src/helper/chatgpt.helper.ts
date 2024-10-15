@@ -2,6 +2,10 @@
 import AbstractChatHelper from './abstract-chat.helper';
 
 class ChatGPTHelper extends AbstractChatHelper {
+  readonly hasNativeTextToSpeech: boolean = true;
+
+  private lastButtonTextToSpeechPlay: HTMLButtonElement | null = null;
+
   constructor() {
     super();
     this.init();
@@ -25,11 +29,12 @@ class ChatGPTHelper extends AbstractChatHelper {
     this.loadPromptElement();
     this.loadSendButtonElement();
     this.loadMessageGroupElement();
-    this.updateScrollBottomElement();
-    this.updateLastMessageElement();
+    this.loadScrollBottomElement();
+    this.loadLastMessageElement();
+    this.loadLastButtonTextToSpeechPlay();
   }
 
-  private updateScrollBottomElement(): void {
+  private loadScrollBottomElement(): void {
     if (this.messageGroupElement?.lastChild) {
       const lastChild = this.messageGroupElement.lastChild as HTMLElement;
       if (lastChild.tagName === 'BUTTON') {
@@ -38,8 +43,15 @@ class ChatGPTHelper extends AbstractChatHelper {
     }
   }
 
-  private updateLastMessageElement(): void {
+  private loadLastMessageElement(): void {
     this.lastMessageElement = document.querySelector('[data-scroll-anchor="true"]');
+  }
+
+  private loadLastButtonTextToSpeechPlay(): void {
+    this.loadLastMessageElement();
+    this.lastButtonTextToSpeechPlay = this.lastMessageElement?.querySelector(
+      'button[data-testid="voice-play-turn-action-button"]',
+    ) as HTMLButtonElement;
   }
 
   private enableSendButton(): void {
@@ -74,10 +86,44 @@ class ChatGPTHelper extends AbstractChatHelper {
   }
 
   sendMessage(): void {
-    this.loadSendButtonElement();
-    console.log('ChatGPTHelper sendMessage', this.promptElement);
-    this.sendButtonElement?.click();
-    this.rollDown();
+    const attemptToSendMessage = (retryCount: number): void => {
+      this.loadSendButtonElement();
+      console.log('ChatGPTHelper sendMessage', this.sendButtonElement);
+
+      let clickDispatched = false;
+
+      const clickListener = (): void => {
+        console.log('Send button click event successfully dispatched');
+        clickDispatched = true;
+        this.sendButtonElement?.removeEventListener('click', clickListener);
+      };
+
+      this.sendButtonElement?.addEventListener('click', clickListener);
+
+      const clickEvent = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      });
+      this.sendButtonElement?.dispatchEvent(clickEvent);
+
+      setTimeout(() => {
+        if (!clickDispatched && retryCount > 0) {
+          console.log(
+            `Click event not dispatched successfully. Retrying... (${retryCount} attempts left)`,
+          );
+          this.sendButtonElement?.removeEventListener('click', clickListener);
+          attemptToSendMessage(retryCount - 1);
+        } else if (!clickDispatched) {
+          console.error('Send button click event not dispatched after multiple attempts');
+        }
+      }, 500);
+
+      this.rollDown();
+    };
+    setTimeout(() => {
+      attemptToSendMessage(5);
+    }, 500);
   }
 
   clearPrompt(): void {
@@ -98,7 +144,7 @@ class ChatGPTHelper extends AbstractChatHelper {
 
   rollDown(): void {
     console.log('ChatGPTHelper rollDown', this.promptElement);
-    this.updateScrollBottomElement();
+    this.loadScrollBottomElement();
     this.scrollBottomElement?.click();
   }
 
@@ -124,54 +170,26 @@ class ChatGPTHelper extends AbstractChatHelper {
 
     observer.observe(document.documentElement, { childList: true, subtree: true });
   }
+
+  playNativeTextToSpeech(): void {
+    const attemptToPlayTTS = (retryCount: number): void => {
+      this.loadLastButtonTextToSpeechPlay();
+      console.log('ChatGPTHelper playNativeTextToSpeech', this.lastButtonTextToSpeechPlay);
+
+      if (!this.lastButtonTextToSpeechPlay) {
+        if (retryCount > 0) {
+          console.log(`Text-to-Speech button not found. Retrying... (${retryCount} attempts left)`);
+          setTimeout(() => attemptToPlayTTS(retryCount - 1), 500);
+        } else {
+          console.error('Text-to-Speech button not found after multiple attempts');
+        }
+        return;
+      }
+
+      this.lastButtonTextToSpeechPlay.click();
+    };
+    setTimeout(() => attemptToPlayTTS(5), 500);
+  }
 }
 
 export default ChatGPTHelper;
-
-/*
-  -- mutation Test
-
-  e = document.querySelector('[role="presentation"]')?.children[0]
-      ?.children[0]?.children[0]?.children[0]
-  c = { attributes: true, childList: true, subtree: true }
-  m = new MutationObserver(e => console.log(e))
-  m.observe(e, c)
-
-  -- disconnect mutation
-  m.disconnect()
-
-  -- Ideias:
-    * Monitorar novas mensagens
-    * Monitorar fim da mensagem do GPT
-    * Monitorar surgimento do botão de rolar para baixo
-    * Monitorar surgimento dos botões de ler, copiar, gerar novamente, resposta insatisfatória e modelo de alteração
-
-*/
-
-/*
-  Obtêm elemento do grupo de mensagens
-  document.querySelectorAll('[role="presentation"]')[0]?.children[0]?.children[0]?.children[0]?.children[0]
-    - Se o ultimo elemento filho do grupo de mensagens for um botão, será o scrollBottomElement
-
-  Obtêm todas as mensagens
-  document.querySelectorAll('[data-testid^=conversation-turn]')
-
-  Obtêm a última mensagem
-  document.querySelectorAll('[data-scroll-anchor="true"]')
-
-  Obtêm o campo de texto de uma mensagem
-  document.querySelectorAll('[data-testid^=conversation-turn]')[119].querySelectorAll('.markdown')
-
-  Obtêm botões ação de uma mensagem
-  document.querySelectorAll('[data-testid^=conversation-turn]')[119].querySelectorAll('.mt-1 span button')
-    - Se 5 botões serem retornados:
-      1. Ler em voz alta
-      2. Copiar
-      3. Gerar novamente
-      4. Resposta insatisfatória
-      5. Modelo de alteração
-
-    - Se 1 botão for retornado:
-      1. Copiar
-
-*/

@@ -145,10 +145,30 @@ class SpeechRecognitionService extends ListenerService<
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      this.microphoneStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.microphoneStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          channelCount: 1,
+        },
+      });
       const source = this.audioContext.createMediaStreamSource(this.microphoneStream);
+
+      const lowPassFilter = this.audioContext.createBiquadFilter();
+      lowPassFilter.type = 'lowpass';
+      lowPassFilter.frequency.setValueAtTime(3000, this.audioContext.currentTime);
+      // Frequência de corte de 3000 Hz
+
+      const highPassFilter = this.audioContext.createBiquadFilter();
+      highPassFilter.type = 'highpass';
+      highPassFilter.frequency.setValueAtTime(300, this.audioContext.currentTime);
+      // Frequência de corte de 300 Hz
+
+      source.connect(highPassFilter);
+      highPassFilter.connect(lowPassFilter);
+
       this.analyser = this.audioContext.createAnalyser();
-      source.connect(this.analyser);
+      lowPassFilter.connect(this.analyser);
 
       this.analyseAudio();
     } catch (error) {
