@@ -1,5 +1,7 @@
 import { defaultRecognitionLanguage } from '../config/speech-recognition-languages.config';
 import RecognitionEventEnum from '../enum/recognition-event.enum';
+import AudioProcessingHelper from '../helper/audio-processing.helper';
+import KeepAliveHelper from '../helper/keep-alive.helper';
 import ListenerService from './listener.service';
 
 class SpeechRecognitionService extends ListenerService<
@@ -18,13 +20,9 @@ class SpeechRecognitionService extends ListenerService<
 
   private language: string;
 
-  private keepAliveInterval: NodeJS.Timeout | null;
+  private audioHelper: AudioProcessingHelper;
 
-  private audioContext: AudioContext | null;
-
-  private analyser: AnalyserNode | null;
-
-  private microphoneStream: MediaStream | null;
+  private keepAliveHelper: KeepAliveHelper;
 
   private microphoneVolume: number;
 
@@ -36,10 +34,8 @@ class SpeechRecognitionService extends ListenerService<
     this.error = '';
     this.language = defaultRecognitionLanguage.code;
     this.forceStop = false;
-    this.keepAliveInterval = null;
-    this.audioContext = null;
-    this.analyser = null;
-    this.microphoneStream = null;
+    this.audioHelper = new AudioProcessingHelper();
+    this.keepAliveHelper = new KeepAliveHelper();
     this.microphoneVolume = 0;
 
     this.init();
@@ -68,7 +64,7 @@ class SpeechRecognitionService extends ListenerService<
 
     this.recognition.onend = (): void => {
       this.isListening = false;
-      this.stopAudioCapture();
+      this.audioHelper.stopAudioCapture();
       console.log('SpeechRecognitionService onend');
       this.notifyListeners(RecognitionEventEnum.UPDATE_IS_LISTENING);
     };
@@ -90,8 +86,26 @@ class SpeechRecognitionService extends ListenerService<
       this.forceStop = false;
       try {
         this.recognition.start();
-        this.startAudioCapture();
-        this.startKeepAlive();
+        this.audioHelper
+          .startAudioCapture({
+            echoCancellation: true,
+            noiseSuppression: true,
+            frequencyFilters: {
+              lowPassFrequency: 3000,
+              highPassFrequency: 300,
+            },
+          })
+          .then(({ analyser }) => {
+            if (analyser) {
+              this.analyseAudio(analyser);
+            }
+          });
+        this.keepAliveHelper.start(() => {
+          if (!this.isListening && !this.forceStop && this.recognition) {
+            console.log('[SPEECH-REC] Restarting speech recognition');
+            this.start();
+          }
+        });
       } catch (error) {
         console.log('SpeechRecognitionService start error:', error);
       }
@@ -106,7 +120,7 @@ class SpeechRecognitionService extends ListenerService<
     if (this.recognition) {
       this.recognition.stop();
       if (this.forceStop) {
-        this.stopKeepAlive();
+        this.keepAliveHelper.stop();
       }
     }
   }
@@ -122,84 +136,10 @@ class SpeechRecognitionService extends ListenerService<
     }
   }
 
-  private startKeepAlive(): void {
-    if (this.keepAliveInterval) {
-      clearInterval(this.keepAliveInterval);
-    }
-    this.keepAliveInterval = setInterval((): void => {
-      if (!this.isListening && !this.forceStop && this.recognition) {
-        console.log('[SPEECH-REC] Restarting speech recognition');
-        this.start();
-      }
-    }, 1000);
-  }
-
-  private stopKeepAlive(): void {
-    if (this.keepAliveInterval) {
-      clearInterval(this.keepAliveInterval);
-      this.keepAliveInterval = null;
-    }
-  }
-
-  private async startAudioCapture(): Promise<void> {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      this.microphoneStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          channelCount: 1,
-        },
-      });
-      const source = this.audioContext.createMediaStreamSource(this.microphoneStream);
-
-      const lowPassFilter = this.audioContext.createBiquadFilter();
-      lowPassFilter.type = 'lowpass';
-      lowPassFilter.frequency.setValueAtTime(3000, this.audioContext.currentTime);
-      // Frequência de corte de 3000 Hz
-
-      const highPassFilter = this.audioContext.createBiquadFilter();
-      highPassFilter.type = 'highpass';
-      highPassFilter.frequency.setValueAtTime(300, this.audioContext.currentTime);
-      // Frequência de corte de 300 Hz
-
-      source.connect(highPassFilter);
-      highPassFilter.connect(lowPassFilter);
-
-      this.analyser = this.audioContext.createAnalyser();
-      lowPassFilter.connect(this.analyser);
-
-      this.analyseAudio();
-    } catch (error) {
-      console.error('Error capturing audio: ', error);
-    }
-  }
-
-  private stopAudioCapture(): void {
-    if (this.microphoneStream) {
-      const tracks = this.microphoneStream.getTracks();
-      tracks.forEach(track => track.stop());
-      this.microphoneStream = null;
-    }
-
-    if (this.audioContext) {
-      this.audioContext.close();
-      this.audioContext = null;
-    }
-
-    if (this.analyser) {
-      this.analyser.disconnect();
-      this.analyser = null;
-    }
-  }
-
-  private analyseAudio(): void {
-    if (!this.analyser) return;
-
-    const bufferLength = this.analyser.fftSize;
+  private analyseAudio(analyser: AnalyserNode): void {
+    const bufferLength = analyser.fftSize;
     const dataArray = new Float32Array(bufferLength);
-    this.analyser.getFloatTimeDomainData(dataArray);
+    analyser.getFloatTimeDomainData(dataArray);
 
     let sumSquares = 0.0;
 
@@ -211,12 +151,11 @@ class SpeechRecognitionService extends ListenerService<
     const normalizedVolume = Math.round(Math.min(Math.max(volume * 100, 0), 100));
 
     if (normalizedVolume !== this.microphoneVolume) {
-      // console.log('Microphone volume:', normalizedVolume);
       this.microphoneVolume = normalizedVolume;
       this.notifyListeners(RecognitionEventEnum.UPDATE_MICROPHONE_VOLUME);
     }
 
-    requestAnimationFrame(() => this.analyseAudio());
+    requestAnimationFrame(() => this.analyseAudio(analyser));
   }
 
   getIsListening(): boolean {
