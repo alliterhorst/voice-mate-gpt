@@ -1,5 +1,7 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { throwContextError } from '../common/utils.common';
+import AudioStatusEnum from '../enum/audio-status.enum';
+import DOMManipulationEventEnum from '../enum/dom-manipulation-event.enum';
 
 const businessContext = 'Player';
 
@@ -12,6 +14,8 @@ interface PlayerContextInterface {
   setIsTextToSpeechEnabled: (isTextToSpeechEnabled: boolean) => void;
   isOpenSettingsMenu: boolean;
   setIsOpenSettingsMenu: (isOpenSettingsMenu: boolean) => void;
+  audioStatus: AudioStatusEnum;
+  setAudioStatus: (audioStatus: AudioStatusEnum) => void;
 }
 
 const PlayerContext = createContext<PlayerContextInterface | null>(null);
@@ -21,11 +25,39 @@ export function PlayerProvider({ children }: { children: JSX.Element }): JSX.Ele
   const [isMicrophoneEnabled, setIsMicrophoneEnabled] = useState<boolean>(false);
   const [isTextToSpeechEnabled, setIsTextToSpeechEnabled] = useState<boolean>(false);
   const [isOpenSettingsMenu, setIsOpenSettingsMenu] = useState<boolean>(false);
+  const [audioStatus, setAudioStatus] = useState<AudioStatusEnum>(AudioStatusEnum.STOPPED);
 
   const startPlayer = useCallback(() => {
     setHasPlayerStarted(true);
     setIsMicrophoneEnabled(true);
     setIsTextToSpeechEnabled(true);
+  }, []);
+
+  useEffect(() => {
+    const handleAudioStatusChange = (
+      service: typeof window.VoiceMateGPT.DOMManipulationService,
+      domManipulationEventEnum: DOMManipulationEventEnum,
+    ): void => {
+      switch (domManipulationEventEnum) {
+        case DOMManipulationEventEnum.AUDIO_PLAYING:
+          setAudioStatus(AudioStatusEnum.PLAYING);
+          break;
+        case DOMManipulationEventEnum.AUDIO_STOPPED:
+          setAudioStatus(AudioStatusEnum.STOPPED);
+          break;
+        default:
+          console.info('Other DOM Manipulation Event:', domManipulationEventEnum);
+          break;
+      }
+    };
+
+    window.VoiceMateGPT.DOMManipulationService.subscribe(handleAudioStatusChange, [
+      DOMManipulationEventEnum.AUDIO_PLAYING,
+      DOMManipulationEventEnum.AUDIO_STOPPED,
+    ]);
+    return (): void => {
+      window.VoiceMateGPT.DOMManipulationService.unsubscribe(handleAudioStatusChange);
+    };
   }, []);
 
   const value = useMemo<PlayerContextInterface>(
@@ -38,8 +70,17 @@ export function PlayerProvider({ children }: { children: JSX.Element }): JSX.Ele
       setIsTextToSpeechEnabled,
       isOpenSettingsMenu,
       setIsOpenSettingsMenu,
+      audioStatus,
+      setAudioStatus,
     }),
-    [hasPlayerStarted, startPlayer, isMicrophoneEnabled, isTextToSpeechEnabled, isOpenSettingsMenu],
+    [
+      hasPlayerStarted,
+      startPlayer,
+      isMicrophoneEnabled,
+      isTextToSpeechEnabled,
+      isOpenSettingsMenu,
+      audioStatus,
+    ],
   );
 
   return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>;

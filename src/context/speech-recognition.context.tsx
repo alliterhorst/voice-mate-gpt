@@ -11,6 +11,7 @@ import { throwContextError } from '../common/utils.common';
 import { usePlayerContext } from './player.context';
 import { useOptionContext } from './option.context';
 import RecognitionEventEnum from '../enum/recognition-event.enum';
+import AudioStatusEnum from '../enum/audio-status.enum';
 
 const businessContext = 'SpeechRecognition';
 
@@ -31,7 +32,7 @@ interface SpeechRecognitionContextInterface {
 const SpeechRecognitionContext = createContext<SpeechRecognitionContextInterface | null>(null);
 
 export function SpeechRecognitionProvider({ children }: { children: ReactNode }): JSX.Element {
-  const { isMicrophoneEnabled } = usePlayerContext();
+  const { isMicrophoneEnabled, audioStatus } = usePlayerContext();
   const { recognitionLanguage } = useOptionContext();
   const [isListening, setIsListening] = useState<boolean>(false);
   const [transcript, setTranscript] = useState<Transcript | null>(null);
@@ -84,12 +85,12 @@ export function SpeechRecognitionProvider({ children }: { children: ReactNode })
   }, []);
 
   useEffect(() => {
-    if (isMicrophoneEnabled) {
+    if (isMicrophoneEnabled && audioStatus !== AudioStatusEnum.PLAYING) {
       startSpeechRecognition();
     } else {
       stopSpeechRecognition();
     }
-  }, [isMicrophoneEnabled, startSpeechRecognition, stopSpeechRecognition]);
+  }, [isMicrophoneEnabled, audioStatus, startSpeechRecognition, stopSpeechRecognition]);
 
   useEffect(() => {
     changeLanguage(recognitionLanguage.code);

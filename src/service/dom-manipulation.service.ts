@@ -1,22 +1,11 @@
+import AudioStatusEnum from '../enum/audio-status.enum';
+import DOMManipulationEventEnum from '../enum/dom-manipulation-event.enum';
+import DOMStatusEnum from '../enum/dom-status.enum';
 import HostnameEnum from '../enum/hostname.enum';
 import StreamEventEnum from '../enum/stream-event.enum';
 import AbstractChatHelper from '../helper/abstract-chat.helper';
 import ChatGPTHelper from '../helper/chatgpt.helper';
 import ListenerService from './listener.service';
-
-enum DOMManipulationEventEnum {
-  MESSAGE_SENT = 'MESSAGE_SENT',
-  UPDATED_PROMPT = 'UPDATED_PROMPT',
-  CLEAN_PROMPT = 'CLEAN_PROMPT',
-  ROLLED_DOWN = 'ROLLED_DOWN',
-  STREAM_STARTED = 'STREAM_STARTED',
-  STREAM_COMPLETED = 'STREAM_COMPLETED',
-}
-
-enum DOMStatusEnum {
-  LOADING = 'LOADING',
-  READY = 'READY',
-}
 
 class DOMManipulationService extends ListenerService<
   DOMManipulationService,
@@ -51,6 +40,7 @@ class DOMManipulationService extends ListenerService<
 
     this.observeBackgroundMessages();
     this.observePathChanges();
+    this.observeAudioPlayback();
   }
 
   updatePrompt(text: string): void {
@@ -101,6 +91,21 @@ class DOMManipulationService extends ListenerService<
           break;
         case StreamEventEnum.STREAM_COMPLETED:
           this.streamCompleted();
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
+  private observeAudioPlayback(): void {
+    this.chatHelper?.observeAudioPlayback((audioStatus: AudioStatusEnum) => {
+      switch (audioStatus) {
+        case AudioStatusEnum.PLAYING:
+          this.notifyListeners(DOMManipulationEventEnum.AUDIO_PLAYING);
+          break;
+        case AudioStatusEnum.STOPPED:
+          this.notifyListeners(DOMManipulationEventEnum.AUDIO_STOPPED);
           break;
         default:
           break;

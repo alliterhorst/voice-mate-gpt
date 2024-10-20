@@ -1,10 +1,12 @@
-/* eslint-disable class-methods-use-this */
+import AudioStatusEnum from '../enum/audio-status.enum';
 import AbstractChatHelper from './abstract-chat.helper';
 
 class ChatGPTHelper extends AbstractChatHelper {
   readonly hasNativeTextToSpeech: boolean = true;
 
   private lastButtonTextToSpeechPlay: HTMLButtonElement | null = null;
+
+  private audioElement: HTMLAudioElement | null = null;
 
   constructor() {
     super();
@@ -32,6 +34,7 @@ class ChatGPTHelper extends AbstractChatHelper {
     this.loadScrollBottomElement();
     this.loadLastMessageElement();
     this.loadLastButtonTextToSpeechPlay();
+    this.loadAudioElement();
   }
 
   private loadScrollBottomElement(): void {
@@ -52,6 +55,10 @@ class ChatGPTHelper extends AbstractChatHelper {
     this.lastButtonTextToSpeechPlay = this.lastMessageElement?.querySelector(
       'button[data-testid="voice-play-turn-action-button"]',
     ) as HTMLButtonElement;
+  }
+
+  private loadAudioElement(): void {
+    this.audioElement = document.querySelector('audio');
   }
 
   private enableSendButton(): void {
@@ -189,6 +196,21 @@ class ChatGPTHelper extends AbstractChatHelper {
       this.lastButtonTextToSpeechPlay.click();
     };
     setTimeout(() => attemptToPlayTTS(5), 500);
+  }
+
+  observeAudioPlayback(onChangeAudioStatus: (audioStatus: AudioStatusEnum) => void): void {
+    this.loadAudioElement();
+    if (!this.audioElement) {
+      console.error('Audio element not found');
+      return;
+    }
+    this.audioElement.addEventListener('play', () => onChangeAudioStatus(AudioStatusEnum.PLAYING));
+    this.audioElement.addEventListener('ended', () => onChangeAudioStatus(AudioStatusEnum.STOPPED));
+    this.audioElement.addEventListener('pause', () => onChangeAudioStatus(AudioStatusEnum.STOPPED));
+
+    if (!this.audioElement.paused && !this.audioElement.ended) {
+      onChangeAudioStatus(AudioStatusEnum.PLAYING);
+    }
   }
 }
 

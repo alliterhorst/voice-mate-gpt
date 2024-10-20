@@ -1,3 +1,5 @@
+import AudioStatusEnum from '../enum/audio-status.enum';
+
 abstract class AbstractChatHelper {
   protected promptElement: HTMLElement | null;
 
@@ -44,6 +46,7 @@ abstract class AbstractChatHelper {
   }
 
   abstract whenHydrationCompleted(callback: () => void): void;
+  abstract observeAudioPlayback(onChangeAudioStatus: (audioStatus: AudioStatusEnum) => void): void;
 
   abstract clearPrompt(): void;
   abstract updatePrompt(text: string): void;
