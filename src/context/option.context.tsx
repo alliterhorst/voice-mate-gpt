@@ -6,6 +6,8 @@ import {
   defaultRecognitionLanguage,
   getRecognitionLanguageByCode,
 } from '../config/speech-recognition-languages.config';
+import ConfigurationInterface from '../interface/configuration.interface';
+import DOMManipulationEventEnum from '../enum/dom-manipulation-event.enum';
 
 const businessContext = 'Player';
 const defaultLanguageCode = 'pt-BR';
@@ -14,6 +16,7 @@ interface OptionContextInterface {
   recognitionLanguage: RecognitionLanguageInterface;
   setRecognitionLanguageCode: (recognitionLanguageCode: string) => void;
   optionChange: () => void;
+  config: ConfigurationInterface | null;
 }
 
 const OptionContext = createContext<OptionContextInterface | null>(null);
@@ -27,9 +30,35 @@ export function OptionProvider({ children }: { children: JSX.Element }): JSX.Ele
   const [recognitionLanguage, setRecognitionLanguage] = useState<RecognitionLanguageInterface>(
     defaultRecognitionLanguage,
   );
+  const [config, setConfig] = useState<ConfigurationInterface | null>(
+    window?.VoiceMateGPT?.DOMManipulationService?.config,
+  );
   const optionChange = (): void => {
     setTimeStorageWasLoaded(new Date().toISOString());
   };
+
+  useEffect(() => {
+    const handleConfigChange = (
+      service: typeof window.VoiceMateGPT.DOMManipulationService,
+      domManipulationEventEnum: DOMManipulationEventEnum,
+    ): void => {
+      switch (domManipulationEventEnum) {
+        case DOMManipulationEventEnum.CONFIG_UPDATED:
+          setConfig(window?.VoiceMateGPT?.DOMManipulationService?.config);
+          break;
+        default:
+          console.info('Other DOM Manipulation Event:', domManipulationEventEnum);
+          break;
+      }
+    };
+
+    window.VoiceMateGPT.DOMManipulationService.subscribe(handleConfigChange, [
+      DOMManipulationEventEnum.CONFIG_UPDATED,
+    ]);
+    return (): void => {
+      window.VoiceMateGPT.DOMManipulationService.unsubscribe(handleConfigChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (chrome?.storage?.sync) {
@@ -57,8 +86,9 @@ export function OptionProvider({ children }: { children: JSX.Element }): JSX.Ele
       recognitionLanguage,
       setRecognitionLanguageCode,
       optionChange,
+      config,
     }),
-    [recognitionLanguage],
+    [recognitionLanguage, config],
   );
 
   return <OptionContext.Provider value={value}>{children}</OptionContext.Provider>;

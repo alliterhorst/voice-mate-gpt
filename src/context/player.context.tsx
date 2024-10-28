@@ -16,6 +16,7 @@ interface PlayerContextInterface {
   setIsOpenSettingsMenu: (isOpenSettingsMenu: boolean) => void;
   audioStatus: AudioStatusEnum;
   setAudioStatus: (audioStatus: AudioStatusEnum) => void;
+  skipMessage: () => void;
 }
 
 const PlayerContext = createContext<PlayerContextInterface | null>(null);
@@ -31,6 +32,18 @@ export function PlayerProvider({ children }: { children: JSX.Element }): JSX.Ele
     setHasPlayerStarted(true);
     setIsMicrophoneEnabled(true);
     setIsTextToSpeechEnabled(true);
+  }, []);
+
+  useEffect(() => {
+    window.VoiceMateGPT.DOMManipulationService.updateTextToSpeech(isTextToSpeechEnabled);
+  }, [isTextToSpeechEnabled]);
+
+  useEffect(() => {
+    if (hasPlayerStarted) window.VoiceMateGPT.DOMManipulationService.startPlugin();
+  }, [hasPlayerStarted]);
+
+  const skipMessage = useCallback(() => {
+    window.VoiceMateGPT.DOMManipulationService.skipMessage();
   }, []);
 
   useEffect(() => {
@@ -72,6 +85,7 @@ export function PlayerProvider({ children }: { children: JSX.Element }): JSX.Ele
       setIsOpenSettingsMenu,
       audioStatus,
       setAudioStatus,
+      skipMessage,
     }),
     [
       hasPlayerStarted,
@@ -80,6 +94,7 @@ export function PlayerProvider({ children }: { children: JSX.Element }): JSX.Ele
       isTextToSpeechEnabled,
       isOpenSettingsMenu,
       audioStatus,
+      skipMessage,
     ],
   );
 

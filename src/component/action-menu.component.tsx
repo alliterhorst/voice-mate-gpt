@@ -25,6 +25,7 @@ const ActionMenuComponent: React.FC = () => {
     setIsTextToSpeechEnabled,
     isOpenSettingsMenu,
     setIsOpenSettingsMenu,
+    skipMessage,
   } = usePlayerContext();
 
   return (
@@ -83,7 +84,7 @@ const ActionMenuComponent: React.FC = () => {
         )}
         {hasPlayerStarted && (
           <ButtonComponent
-            onClick={() => console.log(translate.menuPlayer.skipMessage)}
+            onClick={skipMessage}
             $configButton={{
               alt: translate.menuPlayer.skipMessage,
               variant: VariantEnum.PRIMARY,

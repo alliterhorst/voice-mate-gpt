@@ -1,3 +1,4 @@
+import { loadConfigurations } from '../common/utils.common';
 import AudioStatusEnum from '../enum/audio-status.enum';
 import DOMManipulationEventEnum from '../enum/dom-manipulation-event.enum';
 import DOMStatusEnum from '../enum/dom-status.enum';
@@ -5,6 +6,7 @@ import HostnameEnum from '../enum/hostname.enum';
 import StreamEventEnum from '../enum/stream-event.enum';
 import AbstractChatHelper from '../helper/abstract-chat.helper';
 import ChatGPTHelper from '../helper/chatgpt.helper';
+import ConfigurationInterface from '../interface/configuration.interface';
 import ListenerService from './listener.service';
 
 class DOMManipulationService extends ListenerService<
@@ -19,11 +21,19 @@ class DOMManipulationService extends ListenerService<
 
   public status: DOMStatusEnum = DOMStatusEnum.LOADING;
 
+  public config: ConfigurationInterface | null;
+
+  private isTextToSpeechEnabled: boolean;
+
+  private hasPluginBeenStarted: boolean = false;
+
   constructor() {
     super();
     this.chatHelper = null;
     this.currentHost = window.location.host;
     this.currentPath = window.location.pathname;
+    this.config = null;
+    this.isTextToSpeechEnabled = false;
     this.init();
   }
 
@@ -69,7 +79,40 @@ class DOMManipulationService extends ListenerService<
   }
 
   whenHydrationCompleted(callback: () => void): void {
-    if (this.chatHelper) this.chatHelper.whenHydrationCompleted(callback);
+    loadConfigurations().then(config => {
+      this.config = config;
+      if (this.chatHelper) this.chatHelper.whenHydrationCompleted(callback);
+    });
+  }
+
+  updateConfig(config: ConfigurationInterface): void {
+    console.log('DOMManipulationService configUpdated');
+    this.config = config;
+    this.notifyListeners(DOMManipulationEventEnum.CONFIG_UPDATED);
+  }
+
+  updateTextToSpeech(isEnable: boolean): void {
+    console.log(
+      'DOMManipulationService configUpdated',
+      isEnable,
+      'Old',
+      this.isTextToSpeechEnabled,
+    );
+    if (this.isTextToSpeechEnabled === isEnable) return;
+    this.isTextToSpeechEnabled = isEnable;
+    this.notifyListeners(DOMManipulationEventEnum.TEXT_TO_SPEECH_UPDATED);
+    if (!isEnable) this.skipMessage();
+  }
+
+  skipMessage(): void {
+    console.log('DOMManipulationService - skipMessage');
+    this.chatHelper?.stopAudio();
+    this.notifyListeners(DOMManipulationEventEnum.MESSAGE_SKIPPED);
+  }
+
+  startPlugin(): void {
+    this.hasPluginBeenStarted = true;
+    this.notifyListeners(DOMManipulationEventEnum.PLUGIN_STARTED);
   }
 
   private streamStarted(): void {
@@ -79,7 +122,12 @@ class DOMManipulationService extends ListenerService<
 
   private streamCompleted(): void {
     console.log('Stream completed');
-    if (this.chatHelper?.hasNativeTextToSpeech) this.chatHelper.playNativeTextToSpeech();
+    if (
+      this.chatHelper?.hasNativeTextToSpeech &&
+      this.hasPluginBeenStarted &&
+      this.isTextToSpeechEnabled
+    )
+      this.chatHelper.playNativeTextToSpeech();
     this.notifyListeners(DOMManipulationEventEnum.STREAM_COMPLETED);
   }
 

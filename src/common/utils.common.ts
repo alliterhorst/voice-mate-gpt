@@ -1,11 +1,31 @@
 /* eslint-disable no-bitwise */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { getSystemLanguageConfigByCode } from '../config/system-languages.config';
 import StorageKeyEnum from '../enum/storage-key.enum';
+import ConfigurationInterface from '../interface/configuration.interface';
 
 export function throwContextError(businessContext: string): void {
   throw new Error(
     `use${businessContext}Context deve ser utilizando dentro do ${businessContext}Provider`,
   );
+}
+
+export function convertToPersistStorage<T>(value: T): string {
+  let stringValue = '';
+  switch (typeof value) {
+    case 'object':
+      stringValue = JSON.stringify(value);
+      break;
+    case 'boolean':
+    case 'number':
+    case 'string':
+      stringValue = `${value}`;
+      break;
+    default:
+      stringValue = '';
+      break;
+  }
+  return stringValue;
 }
 
 export function syncGetStorage(
@@ -83,3 +103,84 @@ export function generateGradient(startColor: string, endColor: string, steps: nu
   }
   return colors;
 }
+
+export const getPlatformShortcut: () => string = () => {
+  const isMac = navigator?.userAgentData?.platform
+    ? navigator.userAgentData.platform.toUpperCase().includes('MAC')
+    : navigator.platform?.toUpperCase()?.includes('MAC');
+
+  return isMac ? 'Cmd' : 'Ctrl';
+};
+
+export const createDefaultConfig = (): ConfigurationInterface => {
+  const { translate, language } = getSystemLanguageConfigByCode(navigator.language);
+  return {
+    pluginLanguageCode: language,
+    automaticallySendMessage: false,
+    codeBlockIsRead: false,
+    useCommasAndSemicolonsToDivideSentences: true,
+    speechRecognitionLanguageCode: language,
+    useChatgptVoice: true,
+    elevenlabsApiKey: '',
+    useElevenlabsVoice: false,
+    elevenlabsVoice: '',
+    elevenlabsSimilarity: 0,
+    elevenlabsStability: 0,
+    webSpeechApiVoice: window?.speechSynthesis?.getVoices()[0]?.lang || '',
+    webSpeechApiSpeechRate: 1,
+    webSpeechApiPitch: 1,
+    webSpeechApiVolume: 1,
+    isVoiceCommandActive: true,
+    isVoiceCommandToPauseConversationActive: true,
+    isVoiceCommandToResumeConversationActive: true,
+    isVoiceCommandToEndConversationActive: true,
+    isVoiceCommandToDeleteMessageActive: true,
+    isVoiceCommandToSendMessageActive: true,
+    isVoiceCommandToDisableReadingActive: true,
+    isVoiceCommandToEnableReadingActive: true,
+    voiceCommandToPauseConversation: translate.configuration.voiceCommandToPauseConversation,
+    voiceCommandToResumeConversation: translate.configuration.voiceCommandToResumeConversation,
+    voiceCommandToEndConversation: translate.configuration.voiceCommandToEndConversation,
+    voiceCommandToDeleteMessage: translate.configuration.voiceCommandToDeleteMessage,
+    voiceCommandToSendMessage: translate.configuration.voiceCommandToSendMessage,
+    voiceCommandToDisableReading: translate.configuration.voiceCommandToDisableReading,
+    voiceCommandToEnableReading: translate.configuration.voiceCommandToEnableReading,
+    isStartVoiceMateShortcutActive: true,
+    isSkipCurrentReadingShortcutActive: true,
+    isPauseConversationShortcutActive: true,
+    isResumeConversationShortcutActive: true,
+    isEndConversationShortcutActive: true,
+    isDeleteMessageShortcutActive: true,
+    isSendMessageShortcutActive: true,
+    isDisableReadingShortcutActive: true,
+    isEnableReadingShortcutActive: true,
+    startVoiceMateShortcut: `${getPlatformShortcut()}${translate.configuration.shortcutToStartVoiceMate}`,
+    skipCurrentReadingShortcut: `${getPlatformShortcut()}${translate.configuration.shortcutToSkipCurrentReading}`,
+    pauseConversationShortcut: `${getPlatformShortcut()}${translate.configuration.shortcutToPauseConversation}`,
+    resumeConversationShortcut: `${getPlatformShortcut()}${translate.configuration.shortcutToResumeConversation}`,
+    endConversationShortcut: `${getPlatformShortcut()}${translate.configuration.shortcutToEndConversation}`,
+    deleteMessageShortcut: `${getPlatformShortcut()}${translate.configuration.shortcutToDeleteMessage}`,
+    sendMessageShortcut: `${getPlatformShortcut()}${translate.configuration.shortcutToSendMessage}`,
+    disableReadingShortcut: `${getPlatformShortcut()}${translate.configuration.shortcutToDisableReading}`,
+    enableReadingShortcut: `${getPlatformShortcut()}${translate.configuration.shortcutToEnableReading}`,
+  };
+};
+
+export const setConfigurations = (
+  configuration: ConfigurationInterface,
+  onSaved: () => void,
+): void => {
+  chrome.storage.sync.set(configuration, onSaved);
+};
+
+export const loadConfigurations = (): Promise<ConfigurationInterface> =>
+  new Promise(resolve => {
+    chrome.storage.sync.get(null, items => {
+      if (JSON.stringify(items) === '{}') {
+        const config = createDefaultConfig();
+        setConfigurations(config, () => resolve(config));
+      } else {
+        resolve(items as ConfigurationInterface);
+      }
+    });
+  });

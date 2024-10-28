@@ -47,6 +47,7 @@ abstract class AbstractChatHelper {
 
   abstract whenHydrationCompleted(callback: () => void): void;
   abstract observeAudioPlayback(onChangeAudioStatus: (audioStatus: AudioStatusEnum) => void): void;
+  abstract stopAudio(): void;
 
   abstract clearPrompt(): void;
   abstract updatePrompt(text: string): void;

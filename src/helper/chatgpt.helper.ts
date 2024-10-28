@@ -198,6 +198,11 @@ class ChatGPTHelper extends AbstractChatHelper {
     setTimeout(() => attemptToPlayTTS(5), 500);
   }
 
+  stopAudio(): void {
+    this.loadLastButtonTextToSpeechPlay();
+    this.audioElement?.pause();
+  }
+
   observeAudioPlayback(onChangeAudioStatus: (audioStatus: AudioStatusEnum) => void): void {
     this.loadAudioElement();
     if (!this.audioElement) {
