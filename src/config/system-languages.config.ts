@@ -21,7 +21,7 @@ export const LANGUAGES: SystemLanguageConfigInterface[] = [
 ];
 
 export const getSystemLanguageConfigByCode = (
-  code: string = 'en-UK',
+  code: string = 'en-US',
 ): SystemLanguageConfigInterface =>
   LANGUAGES.find(language => language.language === code) ||
   LANGUAGES.find(language => language.language.split('-')[0] === code.split('-')[0]) ||

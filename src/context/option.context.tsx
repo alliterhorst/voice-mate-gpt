@@ -1,41 +1,46 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { syncGetStorage, throwContextError } from '../common/utils.common';
+import { throwContextError } from '../common/utils.common';
 import { RecognitionLanguageInterface } from '../interface/language.interface';
-import StorageKeyEnum from '../enum/storage-key.enum';
-import {
-  defaultRecognitionLanguage,
-  getRecognitionLanguageByCode,
-} from '../config/speech-recognition-languages.config';
+import { getRecognitionLanguageByCode } from '../config/speech-recognition-languages.config';
 import ConfigurationInterface from '../interface/configuration.interface';
 import DOMManipulationEventEnum from '../enum/dom-manipulation-event.enum';
+import {
+  getSystemLanguageConfigByCode,
+  SystemLanguageConfigInterface,
+} from '../config/system-languages.config';
 
 const businessContext = 'Player';
-const defaultLanguageCode = 'pt-BR';
+const defaultSystemLanguageConfig = getSystemLanguageConfigByCode(navigator.language);
+const defaultRecognitionLanguage = getRecognitionLanguageByCode(navigator.language);
 
 interface OptionContextInterface {
+  systemLanguageConfig: SystemLanguageConfigInterface;
   recognitionLanguage: RecognitionLanguageInterface;
-  setRecognitionLanguageCode: (recognitionLanguageCode: string) => void;
-  optionChange: () => void;
   config: ConfigurationInterface | null;
 }
 
 const OptionContext = createContext<OptionContextInterface | null>(null);
 
 export function OptionProvider({ children }: { children: JSX.Element }): JSX.Element {
-  const [timeStorageWasLoaded, setTimeStorageWasLoaded] = useState<string>(
-    new Date().toISOString(),
+  const [systemLanguageConfig, setSystemLanguageConfig] = useState<SystemLanguageConfigInterface>(
+    defaultSystemLanguageConfig,
   );
-  const [recognitionLanguageCode, setRecognitionLanguageCode] =
-    useState<string>(defaultLanguageCode);
   const [recognitionLanguage, setRecognitionLanguage] = useState<RecognitionLanguageInterface>(
     defaultRecognitionLanguage,
   );
   const [config, setConfig] = useState<ConfigurationInterface | null>(
     window?.VoiceMateGPT?.DOMManipulationService?.config,
   );
-  const optionChange = (): void => {
-    setTimeStorageWasLoaded(new Date().toISOString());
-  };
+
+  useEffect(() => {
+    if (!config?.pluginLanguageCode) return;
+    setSystemLanguageConfig(getSystemLanguageConfigByCode(config.pluginLanguageCode));
+  }, [config?.pluginLanguageCode]);
+
+  useEffect(() => {
+    if (!config?.speechRecognitionLanguageCode) return;
+    setRecognitionLanguage(getRecognitionLanguageByCode(config?.speechRecognitionLanguageCode));
+  }, [config?.speechRecognitionLanguageCode]);
 
   useEffect(() => {
     const handleConfigChange = (
@@ -60,35 +65,13 @@ export function OptionProvider({ children }: { children: JSX.Element }): JSX.Ele
     };
   }, []);
 
-  useEffect(() => {
-    if (chrome?.storage?.sync) {
-      syncGetStorage([
-        {
-          storageKey: StorageKeyEnum.RECOGNITION_LANGUAGE,
-          initialValue: defaultLanguageCode,
-          setCallback: setRecognitionLanguageCode,
-        },
-      ]);
-    } else {
-      setRecognitionLanguageCode(
-        localStorage.getItem(StorageKeyEnum.RECOGNITION_LANGUAGE) || defaultLanguageCode,
-      );
-    }
-  }, [timeStorageWasLoaded]);
-
-  useEffect(() => {
-    const language = getRecognitionLanguageByCode(recognitionLanguageCode);
-    setRecognitionLanguage(language);
-  }, [recognitionLanguageCode, setRecognitionLanguage]);
-
   const value = useMemo<OptionContextInterface>(
     () => ({
       recognitionLanguage,
-      setRecognitionLanguageCode,
-      optionChange,
       config,
+      systemLanguageConfig,
     }),
-    [recognitionLanguage, config],
+    [recognitionLanguage, config, systemLanguageConfig],
   );
 
   return <OptionContext.Provider value={value}>{children}</OptionContext.Provider>;

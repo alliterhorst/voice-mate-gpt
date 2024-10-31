@@ -132,7 +132,7 @@ class DOMManipulationService extends ListenerService<
   }
 
   private observeBackgroundMessages(): void {
-    chrome.runtime.onMessage.addListener(message => {
+    chrome?.runtime?.onMessage?.addListener(message => {
       switch (message.type) {
         case StreamEventEnum.STREAM_STARTED:
           this.streamStarted();

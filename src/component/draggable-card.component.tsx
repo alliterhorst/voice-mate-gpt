@@ -9,8 +9,8 @@ import {
   DraggableHeader,
 } from '../style/draggable-card.style';
 import ConfigEnum from '../enum/config.enum';
-import { translate } from '../interface/translate.interface';
 import { theme } from '../theme/theme';
+import { useOptionContext } from '../context/option.context';
 
 type Position = {
   right: number;
@@ -23,6 +23,9 @@ const DraggableCardComponent: React.FC<{
   title: string;
   children?: React.ReactNode;
 }> = ({ title, children }) => {
+  const {
+    systemLanguageConfig: { translate },
+  } = useOptionContext();
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [position, setPosition] = useState<Position>(defaultPosition);
 

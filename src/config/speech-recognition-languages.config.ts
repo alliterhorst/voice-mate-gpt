@@ -472,10 +472,14 @@ export const ALL_RECOGNITION_LANGUAGES: RecognitionLanguageInterface[] =
   }, [] as RecognitionLanguageInterface[]);
 
 export const defaultRecognitionLanguage: RecognitionLanguageInterface = {
-  language: 'Português',
-  countryName: 'Brasil',
-  code: 'pt-BR',
+  language: 'English',
+  countryName: 'United States',
+  code: 'en-US',
 };
 
-export const getRecognitionLanguageByCode = (code: string): RecognitionLanguageInterface =>
-  ALL_RECOGNITION_LANGUAGES.find(language => language.code === code) || defaultRecognitionLanguage;
+export const getRecognitionLanguageByCode = (
+  code: string = 'en-US',
+): RecognitionLanguageInterface =>
+  ALL_RECOGNITION_LANGUAGES.find(language => language.code === code) ||
+  ALL_RECOGNITION_LANGUAGES.find(language => language.code.split('-')[0] === code.split('-')[0]) ||
+  defaultRecognitionLanguage;

@@ -221,7 +221,7 @@ export const translatePT: TranslateInterface = {
     enterElevenLabsAPIKey: 'Digite sua chave de API do ElevenLabs:',
     useElevenLabsVoiceForResponses: 'Usar a voz do ElevenLabs para respostas:',
     chooseElevenLabsVoice: 'Escolha a voz do ElevenLabs:',
-    setElevenLabsVoiceSimilarity: 'Defina a similaridade da voz do ElevenLabs (0 a 1):',
+    setElevenLabsVoiceSimilarity: 'Similaridade da voz:',
     setElevenLabsVoiceStability: 'Defina a estabilidade da voz do ElevenLabs (0 a 1):',
     chooseWebSpeechAPIVoice: 'Escolha a voz da Web Speech API:',
     setSpeechRateForWebSpeechAPI: 'Defina a velocidade da fala para Web Speech API:',
@@ -284,5 +284,3 @@ export const translatePT: TranslateInterface = {
     shortcutToEnableReading: '+Shift+L',
   },
 };
-
-export const translate = translatePT;

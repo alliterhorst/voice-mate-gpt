@@ -175,12 +175,27 @@ export const setConfigurations = (
 
 export const loadConfigurations = (): Promise<ConfigurationInterface> =>
   new Promise(resolve => {
-    chrome.storage.sync.get(null, items => {
-      if (JSON.stringify(items) === '{}') {
-        const config = createDefaultConfig();
-        setConfigurations(config, () => resolve(config));
-      } else {
-        resolve(items as ConfigurationInterface);
-      }
-    });
+    if (!chrome?.storage) {
+      resolve(createDefaultConfig());
+    } else {
+      chrome.storage.sync.get(null, items => {
+        if (JSON.stringify(items) === '{}') {
+          const config = createDefaultConfig();
+          setConfigurations(config, () => resolve(config));
+        } else {
+          resolve(items as ConfigurationInterface);
+        }
+      });
+    }
   });
+
+export const countDecimalPlaces = (value: number): number => {
+  const valueString = value.toString();
+  if (valueString.includes('.')) {
+    return valueString.split('.')[1].length;
+  }
+  return 0;
+};
+
+export const getMaxDecimalPlaces = (values: number[]): number =>
+  Math.max(...values.map(countDecimalPlaces));
