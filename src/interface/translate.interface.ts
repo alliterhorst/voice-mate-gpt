@@ -27,6 +27,9 @@ export interface TranslateInterface {
     automaticallySendMessageAfterRecognizingSpeech: string;
     readCodeBlocksAloud: string;
     useCommasAndSemicolonsToDivideSentences: string;
+    microphoneEchoCancellation: string;
+    microphoneNoiseSuppression: string;
+    frequencyFiltersInSpeechRecognition: string;
     selectSpeechRecognitionLanguage: string;
     useChatGPTVoiceForResponses: string;
     enterElevenLabsAPIKey: string;
@@ -34,10 +37,10 @@ export interface TranslateInterface {
     chooseElevenLabsVoice: string;
     setElevenLabsVoiceSimilarity: string;
     setElevenLabsVoiceStability: string;
-    chooseWebSpeechAPIVoice: string;
-    setSpeechRateForWebSpeechAPI: string;
-    setPitchForWebSpeechAPI: string;
-    setVolumeForWebSpeechAPI: string;
+    speechVoice: string;
+    speechRate: string;
+    voicePitch: string;
+    voiceVolume: string;
 
     enableVoiceCommands: string;
     enableVoiceCommandToPauseConversation: string;
@@ -93,6 +96,14 @@ export interface TranslateInterface {
     shortcutToSendMessageLabel: string;
     shortcutToDisableReadingLabel: string;
     shortcutToEnableReadingLabel: string;
+    pluginSettings: string;
+    voiceRecognition: string;
+    voiceLanguage: string;
+    advancedSpeechSynthesis: string;
+    voiceCommandsControl: string;
+    keyboardShortcuts: string;
+    yes: string;
+    no: string;
   };
 }
 
@@ -122,16 +133,19 @@ export const translateEN: TranslateInterface = {
     readCodeBlocksAloud: 'Read code blocks aloud:',
     useCommasAndSemicolonsToDivideSentences: 'Use commas and semicolons to divide sentences:',
     selectSpeechRecognitionLanguage: 'Select the speech recognition language:',
+    microphoneEchoCancellation: 'Microphone echo cancellation:',
+    microphoneNoiseSuppression: 'Microphone noise suppression:',
+    frequencyFiltersInSpeechRecognition: 'Frequency filters in speech recognition:',
     useChatGPTVoiceForResponses: 'Use ChatGPT’s voice for responses:',
     enterElevenLabsAPIKey: 'Enter your ElevenLabs API key:',
     useElevenLabsVoiceForResponses: 'Use ElevenLabs voice for responses:',
     chooseElevenLabsVoice: 'Choose the ElevenLabs voice:',
     setElevenLabsVoiceSimilarity: 'Set ElevenLabs voice similarity (0 to 1):',
     setElevenLabsVoiceStability: 'Set ElevenLabs voice stability (0 to 1):',
-    chooseWebSpeechAPIVoice: 'Choose the Web Speech API voice:',
-    setSpeechRateForWebSpeechAPI: 'Set speech rate for Web Speech API:',
-    setPitchForWebSpeechAPI: 'Set pitch for Web Speech API:',
-    setVolumeForWebSpeechAPI: 'Set volume for Web Speech API:',
+    speechVoice: 'Speech voice:',
+    speechRate: 'Speech rate:',
+    voicePitch: 'Voice pitch:',
+    voiceVolume: 'Voice volume:',
 
     enableVoiceCommands: 'Enable voice commands',
     enableVoiceCommandToPauseConversation: 'Enable voice command to pause conversation',
@@ -187,6 +201,15 @@ export const translateEN: TranslateInterface = {
     shortcutToSendMessage: '+Shift+M',
     shortcutToDisableReading: '+Shift+D',
     shortcutToEnableReading: '+Shift+L',
+
+    pluginSettings: 'Plugin Settings',
+    voiceRecognition: 'Voice Recognition',
+    voiceLanguage: 'Voice Language',
+    advancedSpeechSynthesis: 'Advanced Speech Synthesis',
+    voiceCommandsControl: 'Voice Commands Control',
+    keyboardShortcuts: 'Keyboard Shortcuts',
+    yes: 'Yes',
+    no: 'No',
   },
 };
 
@@ -218,15 +241,18 @@ export const translatePT: TranslateInterface = {
     useCommasAndSemicolonsToDivideSentences: 'Usar vírgulas e ponto e vírgula para dividir frases:',
     selectSpeechRecognitionLanguage: 'Selecione o idioma de reconhecimento de fala:',
     useChatGPTVoiceForResponses: 'Usar a voz do ChatGPT para as respostas:',
+    microphoneEchoCancellation: 'Cancelamento de eco do microfone:',
+    microphoneNoiseSuppression: 'Supressão de ruído do microfone:',
+    frequencyFiltersInSpeechRecognition: 'Filtros de frequência no reconhecimento de fala:',
     enterElevenLabsAPIKey: 'Digite sua chave de API do ElevenLabs:',
     useElevenLabsVoiceForResponses: 'Usar a voz do ElevenLabs para respostas:',
     chooseElevenLabsVoice: 'Escolha a voz do ElevenLabs:',
     setElevenLabsVoiceSimilarity: 'Similaridade da voz:',
     setElevenLabsVoiceStability: 'Defina a estabilidade da voz do ElevenLabs (0 a 1):',
-    chooseWebSpeechAPIVoice: 'Escolha a voz da Web Speech API:',
-    setSpeechRateForWebSpeechAPI: 'Defina a velocidade da fala para Web Speech API:',
-    setPitchForWebSpeechAPI: 'Defina o tom de voz para Web Speech API:',
-    setVolumeForWebSpeechAPI: 'Defina o volume da Web Speech API:',
+    speechVoice: 'Voz da Fala:',
+    speechRate: 'Velocidade da Fala:',
+    voicePitch: 'Tom de Voz:',
+    voiceVolume: 'Volume da Voz:',
 
     enableVoiceCommands: 'Ativar comandos de voz',
     enableVoiceCommandToPauseConversation: 'Ativar comando de voz para pausar conversa',
@@ -282,5 +308,13 @@ export const translatePT: TranslateInterface = {
     shortcutToSendMessage: '+Shift+M',
     shortcutToDisableReading: '+Shift+D',
     shortcutToEnableReading: '+Shift+L',
+    pluginSettings: 'Configurações do Plugin',
+    voiceRecognition: 'Reconhecimento de Voz',
+    voiceLanguage: 'Linguagem de Voz',
+    advancedSpeechSynthesis: 'Síntese de Fala Avançada',
+    voiceCommandsControl: 'Controle por Comandos de Voz',
+    keyboardShortcuts: 'Atalhos de Teclado',
+    yes: 'Sim',
+    no: 'Não',
   },
 };

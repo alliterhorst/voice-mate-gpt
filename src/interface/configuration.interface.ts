@@ -4,6 +4,11 @@ interface ConfigurationInterface {
   codeBlockIsRead: boolean;
   useCommasAndSemicolonsToDivideSentences: boolean;
   speechRecognitionLanguageCode: string;
+
+  microphoneEchoCancellation: boolean;
+  microphoneNoiseSuppression: boolean;
+  frequencyFiltersInSpeechRecognition: boolean;
+
   useChatgptVoice: boolean;
   elevenlabsApiKey: string;
   useElevenlabsVoice: boolean;

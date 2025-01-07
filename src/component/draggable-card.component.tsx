@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUpRightFromSquare, faGripHorizontal } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -11,13 +11,16 @@ import {
 import ConfigEnum from '../enum/config.enum';
 import { theme } from '../theme/theme';
 import { useOptionContext } from '../context/option.context';
+import { usePlayerContext } from '../context/player.context';
+import ModalComponent from './modal.component';
+import SystemSettingsComponent from './system-settings.component';
 
 type Position = {
-  right: number;
+  left: number;
   top: number;
 };
 
-const defaultPosition: Position = { right: 16, top: 50 };
+const defaultPosition: Position = { left: Math.max(0, window.innerWidth - 300), top: 50 };
 
 const DraggableCardComponent: React.FC<{
   title: string;
@@ -26,60 +29,85 @@ const DraggableCardComponent: React.FC<{
   const {
     systemLanguageConfig: { translate },
   } = useOptionContext();
+  const { isOpenSettingsMenu, setIsOpenSettingsMenu } = usePlayerContext();
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [position, setPosition] = useState<Position>(defaultPosition);
+  const cardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent): void => {
-      if (!isDragging) return;
+    const disableUserSelect = (): void => {
+      document.body.style.userSelect = 'none';
+      document.body.style.webkitUserSelect = 'none';
+    };
 
-      setPosition((prevPosition: Position) => ({
-        right: Math.max(0, prevPosition.right - e.movementX),
-        top: Math.max(0, prevPosition.top + e.movementY),
-      }));
+    const enableUserSelect = (): void => {
+      document.body.style.userSelect = '';
+      document.body.style.webkitUserSelect = '';
+    };
+
+    const handleMouseMove = (e: MouseEvent): void => {
+      if (!isDragging || !cardRef.current) return;
+
+      const rect = cardRef.current.getBoundingClientRect();
+      const newLeft = Math.min(
+        Math.max(0, position.left + e.movementX),
+        window.innerWidth - rect.width,
+      );
+      const newTop = Math.min(
+        Math.max(0, position.top + e.movementY),
+        window.innerHeight - rect.height,
+      );
+      setPosition({ left: newLeft, top: newTop });
     };
 
     const handleMouseUp = (): void => {
       setIsDragging(false);
-      document.body.style.userSelect = '';
-      document.body.style.webkitUserSelect = '';
-      document.body.style.cursor = '';
+      enableUserSelect();
     };
 
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      document.body.style.userSelect = 'none';
-      document.body.style.webkitUserSelect = 'none';
-      document.body.style.cursor = 'grabbing';
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      disableUserSelect();
     } else {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
     }
 
     return (): void => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging]);
+  }, [isDragging, position]);
 
   const setDefaultPosition = useCallback((): void => {
-    setPosition(defaultPosition);
+    if (cardRef.current) {
+      const rect = cardRef.current.getBoundingClientRect();
+      setPosition({
+        left: Math.min(Math.max(0, window.innerWidth - rect.width), window.innerWidth - 300),
+        top: Math.min(Math.max(0, defaultPosition.top), window.innerHeight - rect.height),
+      });
+    }
   }, []);
 
   useEffect(() => {
+    setDefaultPosition();
     window.addEventListener('resize', setDefaultPosition);
     return (): void => {
       window.removeEventListener('resize', setDefaultPosition);
     };
   }, [setDefaultPosition]);
 
-  const startDrag = (): void => {
+  const startDrag = (e: React.MouseEvent): void => {
+    e.preventDefault();
     setIsDragging(true);
   };
 
   return (
-    <DraggableCardContainer style={{ top: `${position.top}px`, right: `${position.right}px` }}>
+    <DraggableCardContainer
+      ref={cardRef}
+      style={{ top: `${position.top}px`, left: `${position.left}px` }}
+    >
       <CardHeader>
         <DraggableHeader onMouseDown={startDrag}>
           <FontAwesomeIcon
@@ -106,7 +134,12 @@ const DraggableCardComponent: React.FC<{
           />
         </a>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent>
+        <ModalComponent onClose={() => setIsOpenSettingsMenu(false)} isOpen={isOpenSettingsMenu}>
+          <SystemSettingsComponent />
+        </ModalComponent>
+        {children}
+      </CardContent>
     </DraggableCardContainer>
   );
 };

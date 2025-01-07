@@ -1,3 +1,7 @@
+# HTML Mocks
+src/mocks/*.html
+
+
 # Logs
 logs
 *.log

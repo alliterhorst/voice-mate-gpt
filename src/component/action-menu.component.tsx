@@ -10,11 +10,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import ButtonComponent from './button.component';
 import { usePlayerContext } from '../context/player.context';
-import { translate } from '../interface/translate.interface';
 import VariantEnum from '../enum/variant.enum';
 import { ContainerColumn, ContainerRow, Divider } from '../style/common.style';
 import VolumeBarsComponent from './volume-bars.component';
+import { useOptionContext } from '../context/option.context';
 
+// eslint-disable-next-line complexity
 const ActionMenuComponent: React.FC = () => {
   const {
     hasPlayerStarted,
@@ -27,6 +28,9 @@ const ActionMenuComponent: React.FC = () => {
     setIsOpenSettingsMenu,
     skipMessage,
   } = usePlayerContext();
+  const {
+    systemLanguageConfig: { translate },
+  } = useOptionContext();
 
   return (
     <ContainerColumn>
@@ -102,6 +106,7 @@ const ActionMenuComponent: React.FC = () => {
           }}
         />
       </ContainerRow>
+
       {isMicrophoneEnabled && <Divider />}
       {isMicrophoneEnabled && (
         <VolumeBarsComponent startColor="#E0B44B" endColor="#00FF00" steps={30} />
