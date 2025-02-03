@@ -10,8 +10,8 @@ interface ConfigurationInterface {
   frequencyFiltersInSpeechRecognition: boolean;
 
   useChatgptVoice: boolean;
-  elevenlabsApiKey: string;
   useElevenlabsVoice: boolean;
+  elevenlabsApiKey: string;
   elevenlabsVoice: string;
   elevenlabsSimilarity: number;
   elevenlabsStability: number;

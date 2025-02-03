@@ -5,7 +5,7 @@ interface InputComponentProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
-  isFilled?: boolean;
+  $isFilled?: boolean;
 }
 
 const InputWrapper = styled.div`
@@ -15,7 +15,7 @@ const InputWrapper = styled.div`
   width: 100%;
 `;
 
-const StyledInput = styled.input<{ isFilled: boolean }>`
+const StyledInput = styled.input<{ $isFilled: boolean }>`
   padding: 8px 8px;
   border: 1px solid #41596d;
   border-radius: 4px;
@@ -28,8 +28,8 @@ const StyledInput = styled.input<{ isFilled: boolean }>`
     border-color: #90caf9;
   }
 
-  ${({ isFilled }): false | RuleSet =>
-    isFilled &&
+  ${({ $isFilled }): false | RuleSet =>
+    $isFilled &&
     css`
       border-color: #41596d;
     `}
@@ -39,13 +39,13 @@ const InputComponent: React.FC<InputComponentProps> = ({
   value,
   onChange,
   placeholder = '',
-  isFilled = false,
+  $isFilled = false,
 }) => (
   <InputWrapper>
     <StyledInput
       value={value}
       onChange={onChange}
-      isFilled={Boolean(value) || isFilled}
+      $isFilled={Boolean(value) || $isFilled}
       placeholder={placeholder}
     />
   </InputWrapper>

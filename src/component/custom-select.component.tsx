@@ -15,7 +15,7 @@ const CustomSelectWrapper = styled.div`
   width: 100%;
 `;
 
-const SelectButton = styled.button<{ isOpen: boolean }>`
+const SelectButton = styled.button<{ $isOpen: boolean }>`
   width: 100%;
   padding: 8px;
   padding-right: 32px;
@@ -32,8 +32,8 @@ const SelectButton = styled.button<{ isOpen: boolean }>`
     border-color: #90caf9;
   }
 
-  ${({ isOpen }): false | RuleSet =>
-    isOpen &&
+  ${({ $isOpen }): false | RuleSet =>
+    $isOpen &&
     css`
       border-color: #90caf9;
     `}
@@ -90,7 +90,7 @@ const CustomSelectComponent: React.FC<CustomSelectComponentProps> = ({
   return (
     <CustomSelectWrapper>
       <SelectButton
-        isOpen={isOpen}
+        $isOpen={isOpen}
         onClick={() => setIsOpen(!isOpen)}
         onBlur={() => setIsOpen(false)}
       >

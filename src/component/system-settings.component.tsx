@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { faSave, faUndo, faTimes } from '@fortawesome/free-solid-svg-icons';
 import AccordionComponent from './accordion.component';
 import LabelControlWrapperComponent from './label-control-wrapper.component';
 import SliderComponent from './slider.component';
@@ -8,6 +9,13 @@ import { LANGUAGES } from '../config/system-languages.config';
 import CustomSelectComponent from './custom-select.component';
 import CheckboxComponent from './checkbox.component';
 import { ALL_RECOGNITION_LANGUAGES } from '../config/speech-recognition-languages.config';
+import InputComponent from './input.component';
+import ButtonComponent from './button.component';
+import VariantEnum from '../enum/variant.enum';
+import { ContainerRow } from '../style/common.style';
+import ConfigurationInterface from '../interface/configuration.interface';
+
+const MockElevenLabsVoices = ['Voice 1', 'Voice 2'];
 
 const SettingsContainer = styled.div`
   display: flex;
@@ -20,218 +28,393 @@ const SettingsContainer = styled.div`
   margin: 0 auto;
 `;
 
-const SettingsHeader = styled.h2`
+const SettingsHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 16px;
   color: ${(props): string => props.theme.colors.text};
 `;
 
+const SettingsContent = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  max-height: 60vh;
+`;
+
+interface SystemSettingsComponentProps {
+  onSettingsClose: () => void;
+}
+
 // eslint-disable-next-line complexity
-const SystemSettingsComponent: React.FC = () => {
+const SystemSettingsComponent: React.FC<SystemSettingsComponentProps> = ({ onSettingsClose }) => {
   const {
     systemLanguageConfig: { translate },
     config,
+    updateConfig,
+    voiceAvailable,
   } = useOptionContext();
-  const [pluginLanguageCode, setPluginLanguageCode] = useState<string>(
-    config?.pluginLanguageCode || '',
-  );
-  const [automaticallySendMessage, setAutomaticallySendMessage] = useState<boolean>(
-    config?.automaticallySendMessage || false,
-  );
-  const [codeBlockIsRead, setCodeBlockIsRead] = useState<boolean>(config?.codeBlockIsRead || false);
-  const [voiceRecognitionLanguageCode, setVoiceRecognitionLanguageCode] = useState<string>(
-    config?.speechRecognitionLanguageCode || '',
-  );
-  const [useCommasAndSemicolonsToDivideSentences, setUseCommasAndSemicolonsToDivideSentences] =
-    useState<boolean>(config?.useCommasAndSemicolonsToDivideSentences || false);
-  const [microphoneEchoCancellation, setMicrophoneEchoCancellation] = useState<boolean>(
-    config?.microphoneEchoCancellation || false,
-  );
-  const [microphoneNoiseSuppression, setMicrophoneNoiseSuppression] = useState<boolean>(
-    config?.microphoneNoiseSuppression || false,
-  );
-  const [frequencyFiltersInSpeechRecognition, setFrequencyFiltersInSpeechRecognition] =
-    useState<boolean>(config?.frequencyFiltersInSpeechRecognition || false);
-  const [webSpeechApiVoice, setWebSpeechApiVoice] = useState<string>(
-    config?.webSpeechApiVoice || '',
-  );
-  const [webSpeechApiSpeechRate, setWebSpeechApiSpeechRate] = useState<number>(
-    config?.webSpeechApiSpeechRate || 1,
-  );
-  const [webSpeechApiPitch, setWebSpeechApiPitch] = useState<number>(
-    config?.webSpeechApiPitch || 1,
-  );
-  const [webSpeechApiVolume, setWebSpeechApiVolume] = useState<number>(
-    config?.webSpeechApiVolume || 1,
-  );
+  const [localConfig, setLocalConfig] = useState<ConfigurationInterface>({
+    pluginLanguageCode: config?.pluginLanguageCode || '',
+    automaticallySendMessage: config?.automaticallySendMessage || false,
+    codeBlockIsRead: config?.codeBlockIsRead || false,
+    speechRecognitionLanguageCode: config?.speechRecognitionLanguageCode || '',
+    useCommasAndSemicolonsToDivideSentences:
+      config?.useCommasAndSemicolonsToDivideSentences || false,
+    microphoneEchoCancellation: config?.microphoneEchoCancellation || false,
+    microphoneNoiseSuppression: config?.microphoneNoiseSuppression || false,
+    frequencyFiltersInSpeechRecognition: config?.frequencyFiltersInSpeechRecognition || false,
+    useChatgptVoice: config?.useChatgptVoice || true,
+    webSpeechApiVoice:
+      config?.webSpeechApiVoice || voiceAvailable.find(voice => voice.default)?.voiceURI || '',
+    webSpeechApiSpeechRate: config?.webSpeechApiSpeechRate || 1,
+    webSpeechApiPitch: config?.webSpeechApiPitch || 1,
+    webSpeechApiVolume: config?.webSpeechApiVolume || 1,
+    useElevenlabsVoice: config?.useElevenlabsVoice || false,
+    elevenlabsApiKey: config?.elevenlabsApiKey || '',
+    elevenlabsVoice: config?.elevenlabsVoice || '',
+    elevenlabsSimilarity: config?.elevenlabsSimilarity || 0,
+    elevenlabsStability: config?.elevenlabsStability || 0,
+    isVoiceCommandActive: config?.isVoiceCommandActive || true,
+    isVoiceCommandToPauseConversationActive:
+      config?.isVoiceCommandToPauseConversationActive || true,
+    isVoiceCommandToResumeConversationActive:
+      config?.isVoiceCommandToResumeConversationActive || true,
+    isVoiceCommandToEndConversationActive: config?.isVoiceCommandToEndConversationActive || true,
+    isVoiceCommandToDeleteMessageActive: config?.isVoiceCommandToDeleteMessageActive || true,
+    isVoiceCommandToSendMessageActive: config?.isVoiceCommandToSendMessageActive || true,
+    isVoiceCommandToDisableReadingActive: config?.isVoiceCommandToDisableReadingActive || true,
+    isVoiceCommandToEnableReadingActive: config?.isVoiceCommandToEnableReadingActive || true,
+    voiceCommandToPauseConversation: config?.voiceCommandToPauseConversation || '',
+    voiceCommandToResumeConversation: config?.voiceCommandToResumeConversation || '',
+    voiceCommandToEndConversation: config?.voiceCommandToEndConversation || '',
+    voiceCommandToDeleteMessage: config?.voiceCommandToDeleteMessage || '',
+    voiceCommandToSendMessage: config?.voiceCommandToSendMessage || '',
+    voiceCommandToDisableReading: config?.voiceCommandToDisableReading || '',
+    voiceCommandToEnableReading: config?.voiceCommandToEnableReading || '',
+    isStartVoiceMateShortcutActive: config?.isStartVoiceMateShortcutActive || true,
+    isSkipCurrentReadingShortcutActive: config?.isSkipCurrentReadingShortcutActive || true,
+    isPauseConversationShortcutActive: config?.isPauseConversationShortcutActive || true,
+    isResumeConversationShortcutActive: config?.isResumeConversationShortcutActive || true,
+    isEndConversationShortcutActive: config?.isEndConversationShortcutActive || true,
+    isDeleteMessageShortcutActive: config?.isDeleteMessageShortcutActive || true,
+    isSendMessageShortcutActive: config?.isSendMessageShortcutActive || true,
+    isDisableReadingShortcutActive: config?.isDisableReadingShortcutActive || true,
+    isEnableReadingShortcutActive: config?.isEnableReadingShortcutActive || true,
+    startVoiceMateShortcut: config?.startVoiceMateShortcut || '',
+    skipCurrentReadingShortcut: config?.skipCurrentReadingShortcut || '',
+    pauseConversationShortcut: config?.pauseConversationShortcut || '',
+    resumeConversationShortcut: config?.resumeConversationShortcut || '',
+    endConversationShortcut: config?.endConversationShortcut || '',
+    deleteMessageShortcut: config?.deleteMessageShortcut || '',
+    sendMessageShortcut: config?.sendMessageShortcut || '',
+    disableReadingShortcut: config?.disableReadingShortcut || '',
+    enableReadingShortcut: config?.enableReadingShortcut || '',
+  });
+
+  const [hasChanges, setHasChanges] = useState<boolean>(false);
+
+  const handleInputChange = <T extends keyof ConfigurationInterface>(
+    field: T,
+    value: ConfigurationInterface[T],
+  ): void => {
+    setLocalConfig(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = (): void => {
+    updateConfig(localConfig);
+    console.log('Update config:', localConfig);
+  };
+
+  const handleRestore = (): void => {
+    // TODO: Restore default settings
+    setLocalConfig({ ...config } as ConfigurationInterface);
+  };
+
+  useEffect(() => {
+    setHasChanges(JSON.stringify(localConfig) !== JSON.stringify(config));
+  }, [localConfig, config]);
 
   return (
     <SettingsContainer>
-      <SettingsHeader>{translate.menuPlayer.configurations}</SettingsHeader>
-      <AccordionComponent
-        items={[
-          {
-            title: translate.configuration.pluginSettings,
-            content: (
-              <div>
-                <LabelControlWrapperComponent label={translate.configuration.selectPluginLanguage}>
-                  <CustomSelectComponent
-                    options={LANGUAGES.map(language => ({
-                      value: language.language as string,
-                      label: language.label,
-                    }))}
-                    placeholder="Selecione"
-                    onChange={setPluginLanguageCode}
-                    value={pluginLanguageCode}
-                  />
-                </LabelControlWrapperComponent>
-                <LabelControlWrapperComponent
-                  label={translate.configuration.automaticallySendMessageAfterRecognizingSpeech}
-                >
-                  <CheckboxComponent
-                    labels={{
-                      labelOn: `(${translate.configuration.yes})`,
-                      labelOff: `(${translate.configuration.no})`,
-                    }}
-                    checked={automaticallySendMessage}
-                    onChange={setAutomaticallySendMessage}
-                  />
-                </LabelControlWrapperComponent>
-                <LabelControlWrapperComponent label={translate.configuration.readCodeBlocksAloud}>
-                  <CheckboxComponent
-                    labels={{
-                      labelOn: `(${translate.configuration.yes})`,
-                      labelOff: `(${translate.configuration.no})`,
-                    }}
-                    checked={codeBlockIsRead}
-                    onChange={setCodeBlockIsRead}
-                  />
-                </LabelControlWrapperComponent>
-                <LabelControlWrapperComponent
-                  label={translate.configuration.useCommasAndSemicolonsToDivideSentences}
-                >
-                  <CheckboxComponent
-                    labels={{
-                      labelOn: `(${translate.configuration.yes})`,
-                      labelOff: `(${translate.configuration.no})`,
-                    }}
-                    checked={useCommasAndSemicolonsToDivideSentences}
-                    onChange={setUseCommasAndSemicolonsToDivideSentences}
-                  />
-                </LabelControlWrapperComponent>
-              </div>
-            ),
-          },
-          {
-            title: translate.configuration.voiceRecognition,
-            content: (
-              <div>
-                <LabelControlWrapperComponent label={translate.configuration.voiceRecognition}>
-                  <CustomSelectComponent
-                    options={ALL_RECOGNITION_LANGUAGES.map(recognitionLanguage => ({
-                      value: recognitionLanguage.code as string,
-                      label: `${recognitionLanguage.language} ${recognitionLanguage.countryName ? ` (${recognitionLanguage.countryName})` : ''}`,
-                    }))}
-                    onChange={setVoiceRecognitionLanguageCode}
-                    value={voiceRecognitionLanguageCode}
-                  />
-                </LabelControlWrapperComponent>
-                <LabelControlWrapperComponent
-                  label={translate.configuration.microphoneEchoCancellation}
-                >
-                  <CheckboxComponent
-                    labels={{
-                      labelOn: `(${translate.configuration.yes})`,
-                      labelOff: `(${translate.configuration.no})`,
-                    }}
-                    checked={microphoneEchoCancellation}
-                    onChange={setMicrophoneEchoCancellation}
-                  />
-                </LabelControlWrapperComponent>
-                <LabelControlWrapperComponent
-                  label={translate.configuration.microphoneNoiseSuppression}
-                >
-                  <CheckboxComponent
-                    labels={{
-                      labelOn: `(${translate.configuration.yes})`,
-                      labelOff: `(${translate.configuration.no})`,
-                    }}
-                    checked={microphoneNoiseSuppression}
-                    onChange={setMicrophoneNoiseSuppression}
-                  />
-                </LabelControlWrapperComponent>
-                <LabelControlWrapperComponent
-                  label={translate.configuration.frequencyFiltersInSpeechRecognition}
-                >
-                  <CheckboxComponent
-                    labels={{
-                      labelOn: `(${translate.configuration.yes})`,
-                      labelOff: `(${translate.configuration.no})`,
-                    }}
-                    checked={frequencyFiltersInSpeechRecognition}
-                    onChange={setFrequencyFiltersInSpeechRecognition}
-                  />
-                </LabelControlWrapperComponent>
-              </div>
-            ),
-          },
-          {
-            title: translate.configuration.voiceLanguage,
-            content: (
-              <div>
-                <LabelControlWrapperComponent label={translate.configuration.speechVoice}>
-                  <CustomSelectComponent
-                    options={window?.speechSynthesis?.getVoices().map(voice => ({
-                      value: voice.voiceURI,
-                      label: voice.name,
-                    }))}
-                    onChange={setWebSpeechApiVoice}
-                    value={webSpeechApiVoice}
-                  />
-                </LabelControlWrapperComponent>
-                <LabelControlWrapperComponent
-                  label={`${translate.configuration.speechRate} (${webSpeechApiSpeechRate})`}
-                >
-                  <SliderComponent
-                    min={0.5}
-                    max={3}
-                    step={0.1}
-                    value={webSpeechApiSpeechRate}
-                    onChange={setWebSpeechApiSpeechRate}
-                  />
-                </LabelControlWrapperComponent>
-                <LabelControlWrapperComponent
-                  label={`${translate.configuration.voicePitch} (${webSpeechApiPitch})`}
-                >
-                  <SliderComponent
-                    min={0}
-                    max={2}
-                    step={0.1}
-                    value={webSpeechApiPitch}
-                    onChange={setWebSpeechApiPitch}
-                  />
-                </LabelControlWrapperComponent>
-                <LabelControlWrapperComponent
-                  label={`${translate.configuration.voiceVolume} (${webSpeechApiVolume})`}
-                >
-                  <SliderComponent
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    value={webSpeechApiVolume}
-                    onChange={setWebSpeechApiVolume}
-                  />
-                </LabelControlWrapperComponent>
-              </div>
-            ),
-          },
-          {
-            title: translate.configuration.advancedSpeechSynthesis,
-            content: 'Nem aqui...',
-          },
-          { title: translate.configuration.voiceCommandsControl, content: 'Aqui piorou...' },
-          { title: translate.configuration.keyboardShortcuts, content: 'Aff...' },
-        ]}
-      />
+      <SettingsHeader>
+        <h2>{translate.menuPlayer.configurations}</h2>
+        <ContainerRow style={{ justifyContent: 'flex-end' }}>
+          <ButtonComponent
+            onClick={handleSave}
+            $configButton={{
+              alt: translate.configuration.save,
+              label: translate.configuration.save,
+              icon: faSave,
+              variant: VariantEnum.PRIMARY,
+            }}
+            disabled={!hasChanges}
+          />
+          <div style={{ margin: '0 10px' }}>
+            <ButtonComponent
+              onClick={handleRestore}
+              $configButton={{
+                alt: translate.configuration.restoreDefaultSettings,
+                icon: faUndo,
+                variant: VariantEnum.PRIMARY,
+              }}
+            />
+          </div>
+          <ButtonComponent
+            onClick={onSettingsClose}
+            $configButton={{
+              alt: translate.configuration.cancel,
+              icon: faTimes,
+              variant: VariantEnum.PRIMARY,
+            }}
+          />
+        </ContainerRow>
+      </SettingsHeader>
+      <SettingsContent>
+        <AccordionComponent
+          items={[
+            {
+              title: translate.configuration.pluginSettings,
+              content: (
+                <div>
+                  <LabelControlWrapperComponent
+                    label={translate.configuration.selectPluginLanguage}
+                  >
+                    <CustomSelectComponent
+                      options={LANGUAGES.map(language => ({
+                        value: language.language as string,
+                        label: language.label,
+                      }))}
+                      placeholder={translate.configuration.selectAnOption}
+                      onChange={(value): void => handleInputChange('pluginLanguageCode', value)}
+                      value={localConfig.pluginLanguageCode}
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent
+                    label={translate.configuration.automaticallySendMessageAfterRecognizingSpeech}
+                  >
+                    <CheckboxComponent
+                      labels={{
+                        labelOn: `(${translate.configuration.yes})`,
+                        labelOff: `(${translate.configuration.no})`,
+                      }}
+                      checked={localConfig.automaticallySendMessage}
+                      onChange={(value): void =>
+                        handleInputChange('automaticallySendMessage', value)
+                      }
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent label={translate.configuration.readCodeBlocksAloud}>
+                    <CheckboxComponent
+                      labels={{
+                        labelOn: `(${translate.configuration.yes})`,
+                        labelOff: `(${translate.configuration.no})`,
+                      }}
+                      checked={localConfig.codeBlockIsRead}
+                      onChange={(value): void => handleInputChange('codeBlockIsRead', value)}
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent
+                    label={translate.configuration.useCommasAndSemicolonsToDivideSentences}
+                  >
+                    <CheckboxComponent
+                      labels={{
+                        labelOn: `(${translate.configuration.yes})`,
+                        labelOff: `(${translate.configuration.no})`,
+                      }}
+                      checked={localConfig.useCommasAndSemicolonsToDivideSentences}
+                      onChange={(value): void =>
+                        handleInputChange('useCommasAndSemicolonsToDivideSentences', value)
+                      }
+                    />
+                  </LabelControlWrapperComponent>
+                </div>
+              ),
+            },
+            {
+              title: translate.configuration.voiceRecognition,
+              content: (
+                <div>
+                  <LabelControlWrapperComponent label={translate.configuration.voiceRecognition}>
+                    <CustomSelectComponent
+                      options={ALL_RECOGNITION_LANGUAGES.map(recognitionLanguage => ({
+                        value: recognitionLanguage.code as string,
+                        label: `${recognitionLanguage.language} ${recognitionLanguage.countryName ? ` (${recognitionLanguage.countryName})` : ''}`,
+                      }))}
+                      placeholder={translate.configuration.selectAnOption}
+                      onChange={(value): void =>
+                        handleInputChange('speechRecognitionLanguageCode', value)
+                      }
+                      value={localConfig.speechRecognitionLanguageCode}
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent
+                    label={translate.configuration.microphoneEchoCancellation}
+                  >
+                    <CheckboxComponent
+                      labels={{
+                        labelOn: `(${translate.configuration.yes})`,
+                        labelOff: `(${translate.configuration.no})`,
+                      }}
+                      checked={localConfig.microphoneEchoCancellation}
+                      onChange={(value): void =>
+                        handleInputChange('microphoneEchoCancellation', value)
+                      }
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent
+                    label={translate.configuration.microphoneNoiseSuppression}
+                  >
+                    <CheckboxComponent
+                      labels={{
+                        labelOn: `(${translate.configuration.yes})`,
+                        labelOff: `(${translate.configuration.no})`,
+                      }}
+                      checked={localConfig.microphoneNoiseSuppression}
+                      onChange={(value): void =>
+                        handleInputChange('microphoneNoiseSuppression', value)
+                      }
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent
+                    label={translate.configuration.frequencyFiltersInSpeechRecognition}
+                  >
+                    <CheckboxComponent
+                      labels={{
+                        labelOn: `(${translate.configuration.yes})`,
+                        labelOff: `(${translate.configuration.no})`,
+                      }}
+                      checked={localConfig.frequencyFiltersInSpeechRecognition}
+                      onChange={(value): void =>
+                        handleInputChange('frequencyFiltersInSpeechRecognition', value)
+                      }
+                    />
+                  </LabelControlWrapperComponent>
+                </div>
+              ),
+            },
+            {
+              title: translate.configuration.voiceLanguage,
+              content: (
+                <div>
+                  <LabelControlWrapperComponent label={translate.configuration.speechVoice}>
+                    <CustomSelectComponent
+                      options={voiceAvailable.map(voice => ({
+                        value: voice.voiceURI,
+                        label: `${voice.name} (${voice.lang})`,
+                      }))}
+                      placeholder={translate.configuration.selectAnOption}
+                      onChange={(value): void => handleInputChange('webSpeechApiVoice', value)}
+                      value={localConfig.webSpeechApiVoice}
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent
+                    label={`${translate.configuration.speechRate} (${localConfig.webSpeechApiSpeechRate})`}
+                  >
+                    <SliderComponent
+                      min={0.5}
+                      max={3}
+                      step={0.1}
+                      value={localConfig.webSpeechApiSpeechRate}
+                      onChange={(value): void => handleInputChange('webSpeechApiSpeechRate', value)}
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent
+                    label={`${translate.configuration.voicePitch} (${localConfig.webSpeechApiPitch})`}
+                  >
+                    <SliderComponent
+                      min={0}
+                      max={2}
+                      step={0.1}
+                      value={localConfig.webSpeechApiPitch}
+                      onChange={(value): void => handleInputChange('webSpeechApiPitch', value)}
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent
+                    label={`${translate.configuration.voiceVolume} (${localConfig.webSpeechApiVolume})`}
+                  >
+                    <SliderComponent
+                      min={0}
+                      max={1}
+                      step={0.1}
+                      value={localConfig.webSpeechApiVolume}
+                      onChange={(value): void => handleInputChange('webSpeechApiVolume', value)}
+                    />
+                  </LabelControlWrapperComponent>
+                </div>
+              ),
+            },
+            {
+              title: translate.configuration.advancedSpeechSynthesis,
+              content: (
+                <div>
+                  <LabelControlWrapperComponent
+                    label={translate.configuration.useElevenLabsSpeechSynthesis}
+                  >
+                    <CheckboxComponent
+                      labels={{
+                        labelOn: `(${translate.configuration.yes})`,
+                        labelOff: `(${translate.configuration.no})`,
+                      }}
+                      checked={localConfig.useElevenlabsVoice}
+                      onChange={(value): void => handleInputChange('useElevenlabsVoice', value)}
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent
+                    label={translate.configuration.enterElevenLabsAPIKey}
+                  >
+                    <InputComponent
+                      value={localConfig.elevenlabsApiKey}
+                      onChange={(e): void => handleInputChange('elevenlabsApiKey', e.target.value)}
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent label={translate.configuration.elevenLabsVoice}>
+                    <CustomSelectComponent
+                      options={MockElevenLabsVoices.map(voice => ({
+                        value: voice,
+                        label: voice,
+                      }))}
+                      placeholder={translate.configuration.selectAnOption}
+                      onChange={(value): void => handleInputChange('elevenlabsVoice', value)}
+                      value={localConfig.elevenlabsVoice}
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent
+                    label={`${translate.configuration.elevenlabsVoiceStability} (${localConfig.elevenlabsStability})`}
+                  >
+                    <SliderComponent
+                      min={0}
+                      max={1}
+                      step={0.1}
+                      value={localConfig.elevenlabsStability}
+                      onChange={(value): void => handleInputChange('elevenlabsStability', value)}
+                    />
+                  </LabelControlWrapperComponent>
+                  <LabelControlWrapperComponent
+                    label={`${translate.configuration.elevenlabsVoiceSimilarity} (${localConfig.elevenlabsSimilarity})`}
+                  >
+                    <SliderComponent
+                      min={0}
+                      max={1}
+                      step={0.1}
+                      value={localConfig.elevenlabsSimilarity}
+                      onChange={(value): void => handleInputChange('elevenlabsSimilarity', value)}
+                    />
+                  </LabelControlWrapperComponent>
+                </div>
+              ),
+            },
+            {
+              title: translate.configuration.voiceCommandsControl,
+              content: translate.configuration.nothingHere,
+            },
+            {
+              title: translate.configuration.keyboardShortcuts,
+              content: translate.configuration.nothingHere,
+            },
+          ]}
+        />
+      </SettingsContent>
     </SettingsContainer>
   );
 };

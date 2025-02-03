@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { throwContextError } from '../common/utils.common';
 import { RecognitionLanguageInterface } from '../interface/language.interface';
 import { getRecognitionLanguageByCode } from '../config/speech-recognition-languages.config';
@@ -8,6 +8,7 @@ import {
   getSystemLanguageConfigByCode,
   SystemLanguageConfigInterface,
 } from '../config/system-languages.config';
+import DOMManipulationService from '../service/dom-manipulation.service';
 
 const businessContext = 'Player';
 const defaultSystemLanguageConfig = getSystemLanguageConfigByCode(navigator.language);
@@ -17,11 +18,16 @@ interface OptionContextInterface {
   systemLanguageConfig: SystemLanguageConfigInterface;
   recognitionLanguage: RecognitionLanguageInterface;
   config: ConfigurationInterface | null;
+  voiceAvailable: SpeechSynthesisVoice[];
+  updateConfig: (config: ConfigurationInterface) => void;
 }
 
 const OptionContext = createContext<OptionContextInterface | null>(null);
 
 export function OptionProvider({ children }: { children: JSX.Element }): JSX.Element {
+  const [domManipulationService] = useState<DOMManipulationService>(
+    window.VoiceMateGPT.DOMManipulationService,
+  );
   const [systemLanguageConfig, setSystemLanguageConfig] = useState<SystemLanguageConfigInterface>(
     defaultSystemLanguageConfig,
   );
@@ -30,6 +36,18 @@ export function OptionProvider({ children }: { children: JSX.Element }): JSX.Ele
   );
   const [config, setConfig] = useState<ConfigurationInterface | null>(
     window?.VoiceMateGPT?.DOMManipulationService?.config,
+  );
+  const [voiceAvailable, setVoiceAvailable] = useState<SpeechSynthesisVoice[]>([]);
+
+  const updateConfig = useCallback(
+    (newConfig: ConfigurationInterface): void => {
+      try {
+        domManipulationService.updateConfig(newConfig);
+      } catch (error) {
+        setConfig(newConfig);
+      }
+    },
+    [domManipulationService, setConfig],
   );
 
   useEffect(() => {
@@ -49,7 +67,10 @@ export function OptionProvider({ children }: { children: JSX.Element }): JSX.Ele
     ): void => {
       switch (domManipulationEventEnum) {
         case DOMManipulationEventEnum.CONFIG_UPDATED:
-          setConfig(window?.VoiceMateGPT?.DOMManipulationService?.config);
+          setConfig(service.config);
+          break;
+        case DOMManipulationEventEnum.VOICES_AVAILABLE:
+          setVoiceAvailable(service.voicesAvailable);
           break;
         default:
           console.info('Other DOM Manipulation Event:', domManipulationEventEnum);
@@ -59,6 +80,7 @@ export function OptionProvider({ children }: { children: JSX.Element }): JSX.Ele
 
     window.VoiceMateGPT.DOMManipulationService.subscribe(handleConfigChange, [
       DOMManipulationEventEnum.CONFIG_UPDATED,
+      DOMManipulationEventEnum.VOICES_AVAILABLE,
     ]);
     return (): void => {
       window.VoiceMateGPT.DOMManipulationService.unsubscribe(handleConfigChange);
@@ -70,8 +92,10 @@ export function OptionProvider({ children }: { children: JSX.Element }): JSX.Ele
       recognitionLanguage,
       config,
       systemLanguageConfig,
+      voiceAvailable,
+      updateConfig,
     }),
-    [recognitionLanguage, config, systemLanguageConfig],
+    [recognitionLanguage, config, systemLanguageConfig, voiceAvailable, updateConfig],
   );
 
   return <OptionContext.Provider value={value}>{children}</OptionContext.Provider>;

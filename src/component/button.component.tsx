@@ -16,12 +16,14 @@ interface ButtonComponentProps {
   $configButton: ConfigButtonInterface | ConfigButtonInterface[];
   $currentUniqueId?: string;
   onClick?: () => void;
+  disabled?: boolean;
 }
 
 const ButtonComponent: React.FC<ButtonComponentProps> = ({
   $configButton,
   $currentUniqueId,
   onClick,
+  disabled,
 }) => {
   const currentConfig: ConfigButtonInterface =
     $configButton instanceof Array
@@ -33,6 +35,7 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
       onClick={onClick}
       title={currentConfig.alt}
       $hasLabel={!!currentConfig.label}
+      disabled={disabled}
     >
       {currentConfig.icon && (
         <FontAwesomeIcon icon={currentConfig.icon} style={{ height: '18px' }} />

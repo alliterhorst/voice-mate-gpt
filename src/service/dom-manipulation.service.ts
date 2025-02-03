@@ -1,4 +1,4 @@
-import { loadConfigurations } from '../common/utils.common';
+import { loadConfigurations, setConfigurations } from '../common/utils.common';
 import AudioStatusEnum from '../enum/audio-status.enum';
 import DOMManipulationEventEnum from '../enum/dom-manipulation-event.enum';
 import DOMStatusEnum from '../enum/dom-status.enum';
@@ -22,6 +22,8 @@ class DOMManipulationService extends ListenerService<
   public status: DOMStatusEnum = DOMStatusEnum.LOADING;
 
   public config: ConfigurationInterface | null;
+
+  public voicesAvailable: SpeechSynthesisVoice[] = [];
 
   private isTextToSpeechEnabled: boolean;
 
@@ -48,6 +50,7 @@ class DOMManipulationService extends ListenerService<
     }
     console.log('DOMManipulationService init', this.chatHelper);
 
+    this.getVoicesAvailable();
     this.observeBackgroundMessages();
     this.observePathChanges();
     this.observeAudioPlayback();
@@ -57,7 +60,7 @@ class DOMManipulationService extends ListenerService<
     console.log('DOMManipulationService updatePrompt', text);
     this.chatHelper?.updatePrompt(text);
     this.notifyListeners(DOMManipulationEventEnum.UPDATED_PROMPT);
-    this.sendMessage();
+    if (this.config?.automaticallySendMessage) this.sendMessage();
   }
 
   sendMessage(): void {
@@ -87,8 +90,22 @@ class DOMManipulationService extends ListenerService<
 
   updateConfig(config: ConfigurationInterface): void {
     console.log('DOMManipulationService configUpdated');
+    setConfigurations(config);
     this.config = config;
     this.notifyListeners(DOMManipulationEventEnum.CONFIG_UPDATED);
+  }
+
+  getVoicesAvailable(): void {
+    console.log('DOMManipulationService getVoicesAvailable');
+    chrome.runtime.onMessage.addListener((message: { type: string; payload?: unknown }) => {
+      if (message.type === 'AVAILABLE_VOICES' && Array.isArray(message.payload)) {
+        this.voicesAvailable = message.payload as SpeechSynthesisVoice[];
+        setTimeout(() => {
+          this.notifyListeners(DOMManipulationEventEnum.VOICES_AVAILABLE);
+        }, 1000);
+      }
+    });
+    chrome.runtime.sendMessage({ type: 'REQUEST_VOICES' });
   }
 
   updateTextToSpeech(isEnable: boolean): void {

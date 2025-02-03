@@ -171,7 +171,7 @@ export const createDefaultConfig = (): ConfigurationInterface => {
 
 export const setConfigurations = (
   configuration: ConfigurationInterface,
-  onSaved: () => void,
+  onSaved?: () => void,
 ): void => {
   chrome.storage.sync.set(configuration, onSaved);
 };

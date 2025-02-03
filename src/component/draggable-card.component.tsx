@@ -135,8 +135,8 @@ const DraggableCardComponent: React.FC<{
         </a>
       </CardHeader>
       <CardContent>
-        <ModalComponent onClose={() => setIsOpenSettingsMenu(false)} isOpen={isOpenSettingsMenu}>
-          <SystemSettingsComponent />
+        <ModalComponent onClose={() => setIsOpenSettingsMenu(false)} $isOpen={isOpenSettingsMenu}>
+          <SystemSettingsComponent onSettingsClose={() => setIsOpenSettingsMenu(false)} />
         </ModalComponent>
         {children}
       </CardContent>

@@ -33,8 +33,8 @@ export interface TranslateInterface {
     selectSpeechRecognitionLanguage: string;
     useChatGPTVoiceForResponses: string;
     enterElevenLabsAPIKey: string;
-    useElevenLabsVoiceForResponses: string;
-    chooseElevenLabsVoice: string;
+    useElevenLabsSpeechSynthesis: string;
+    elevenLabsVoice: string;
     setElevenLabsVoiceSimilarity: string;
     setElevenLabsVoiceStability: string;
     speechVoice: string;
@@ -104,6 +104,13 @@ export interface TranslateInterface {
     keyboardShortcuts: string;
     yes: string;
     no: string;
+    nothingHere: string;
+    elevenlabsVoiceSimilarity: string;
+    elevenlabsVoiceStability: string;
+    save: string;
+    restoreDefaultSettings: string;
+    cancel: string;
+    selectAnOption: string;
   };
 }
 
@@ -138,8 +145,8 @@ export const translateEN: TranslateInterface = {
     frequencyFiltersInSpeechRecognition: 'Frequency filters in speech recognition:',
     useChatGPTVoiceForResponses: 'Use ChatGPT’s voice for responses:',
     enterElevenLabsAPIKey: 'Enter your ElevenLabs API key:',
-    useElevenLabsVoiceForResponses: 'Use ElevenLabs voice for responses:',
-    chooseElevenLabsVoice: 'Choose the ElevenLabs voice:',
+    useElevenLabsSpeechSynthesis: 'Use ElevenLabs speech synthesis:',
+    elevenLabsVoice: 'ElevenLabs voice:',
     setElevenLabsVoiceSimilarity: 'Set ElevenLabs voice similarity (0 to 1):',
     setElevenLabsVoiceStability: 'Set ElevenLabs voice stability (0 to 1):',
     speechVoice: 'Speech voice:',
@@ -210,6 +217,13 @@ export const translateEN: TranslateInterface = {
     keyboardShortcuts: 'Keyboard Shortcuts',
     yes: 'Yes',
     no: 'No',
+    nothingHere: 'Nothing Here',
+    elevenlabsVoiceSimilarity: 'ElevenLabs Voice Similarity',
+    elevenlabsVoiceStability: 'ElevenLabs Voice Stability',
+    save: 'Save',
+    restoreDefaultSettings: 'Restore Default Settings',
+    cancel: 'Cancel',
+    selectAnOption: 'Select an option',
   },
 };
 
@@ -245,8 +259,8 @@ export const translatePT: TranslateInterface = {
     microphoneNoiseSuppression: 'Supressão de ruído do microfone:',
     frequencyFiltersInSpeechRecognition: 'Filtros de frequência no reconhecimento de fala:',
     enterElevenLabsAPIKey: 'Digite sua chave de API do ElevenLabs:',
-    useElevenLabsVoiceForResponses: 'Usar a voz do ElevenLabs para respostas:',
-    chooseElevenLabsVoice: 'Escolha a voz do ElevenLabs:',
+    useElevenLabsSpeechSynthesis: 'Usar Sintetização de fala do ElevenLabs:',
+    elevenLabsVoice: 'Voz do ElevenLabs:',
     setElevenLabsVoiceSimilarity: 'Similaridade da voz:',
     setElevenLabsVoiceStability: 'Defina a estabilidade da voz do ElevenLabs (0 a 1):',
     speechVoice: 'Voz da Fala:',
@@ -316,5 +330,12 @@ export const translatePT: TranslateInterface = {
     keyboardShortcuts: 'Atalhos de Teclado',
     yes: 'Sim',
     no: 'Não',
+    nothingHere: 'Nada Aqui',
+    elevenlabsVoiceSimilarity: 'Similaridade da Voz do ElevenLabs',
+    elevenlabsVoiceStability: 'Estabilidade da Voz do ElevenLabs',
+    save: 'Salvar',
+    restoreDefaultSettings: 'Restaurar Configurações Padrão',
+    cancel: 'Cancelar',
+    selectAnOption: 'Selecione uma opção',
   },
 };

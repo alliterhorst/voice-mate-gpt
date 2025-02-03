@@ -3,7 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import Keyframes from 'styled-components/dist/models/Keyframes';
 
 interface ModalComponentProps {
-  isOpen: boolean;
+  $isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
 }
@@ -73,12 +73,12 @@ const ModalContainer = styled.div<{ $isOpen: boolean }>`
   animation: ${({ $isOpen }): Keyframes => ($isOpen ? slideIn : slideOut)} 0.3s ease;
 `;
 
-const ModalComponent: React.FC<ModalComponentProps> = ({ isOpen, onClose, children }) => {
-  if (!isOpen) return null;
+const ModalComponent: React.FC<ModalComponentProps> = ({ $isOpen, onClose, children }) => {
+  if (!$isOpen) return null;
 
   return (
-    <Overlay $isOpen={isOpen} onClick={onClose}>
-      <ModalContainer $isOpen={isOpen} onClick={e => e.stopPropagation()}>
+    <Overlay $isOpen={$isOpen} onClick={onClose}>
+      <ModalContainer $isOpen={$isOpen} onClick={e => e.stopPropagation()}>
         {children}
       </ModalContainer>
     </Overlay>
