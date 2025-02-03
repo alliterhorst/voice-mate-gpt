@@ -6,6 +6,7 @@ import HostnameEnum from '../enum/hostname.enum';
 import StreamEventEnum from '../enum/stream-event.enum';
 import AbstractChatHelper from '../helper/abstract-chat.helper';
 import ChatGPTHelper from '../helper/chatgpt.helper';
+import DeepseekTHelper from '../helper/deepseek.helper';
 import ConfigurationInterface from '../interface/configuration.interface';
 import ListenerService from './listener.service';
 
@@ -44,6 +45,9 @@ class DOMManipulationService extends ListenerService<
       case HostnameEnum.CHATGPT:
       case HostnameEnum.PAGE_TEST_GPT:
         this.chatHelper = new ChatGPTHelper();
+        break;
+      case HostnameEnum.DEEPSEEK:
+        this.chatHelper = new DeepseekTHelper();
         break;
       default:
         break;

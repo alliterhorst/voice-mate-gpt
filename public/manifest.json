@@ -26,7 +26,11 @@
 
   "content_scripts": [
     {
-      "matches": ["https://chat.openai.com/*", "https://chatgpt.com/*"],
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://chat.deepseek.com/*"
+      ],
       "js": ["js/vendor.js", "font-awesome.min.js", "js/content_script.js"]
     }
   ],
@@ -36,5 +40,9 @@
   },
 
   "permissions": ["storage", "webRequest", "tabs", "offscreen"],
-  "host_permissions": ["https://chat.openai.com/*", "https://chatgpt.com/*"]
+  "host_permissions": [
+    "https://chat.openai.com/*",
+    "https://chatgpt.com/*",
+    "https://chat.deepseek.com/*"
+  ]
 }

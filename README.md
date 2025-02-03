@@ -6,7 +6,7 @@
 
 ### Description
 
-**Voice Mate GPT** is an innovative plugin developed in TypeScript, specifically designed to enhance the chat experience on OpenAI. This plugin transforms chat interaction, enabling voice communication with advanced technology. Integrating OpenAI's GPT models for Natural Language Processing (NLP), Voice Mate GPT offers a more natural, fluid, and intuitive interaction.
+**Voice Mate GPT** is an innovative plugin developed in TypeScript, specifically designed to enhance the chat experience on OpenAI and DeepSeek. This plugin transforms chat interaction, enabling voice communication with advanced technology. Integrating OpenAI's GPT models for Natural Language Processing (NLP), Voice Mate GPT offers a more natural, fluid, and intuitive interaction.
 
 ### Features
 
@@ -15,6 +15,7 @@
 - Integration with GPT Models
 - Customization and Flexibility
 - Privacy and Security
+- **Now compatible with DeepSeek, featuring speech recognition capabilities**
 
 ### Use Cases
 
@@ -52,7 +53,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Descrição
 
-**Voice Mate GPT** é um plugin inovador desenvolvido em TypeScript, especialmente projetado para aprimorar a experiência de chat na OpenAI. Este plugin transforma a interação de chat, permitindo comunicação por voz com tecnologia avançada. Com a integração dos modelos GPT para Processamento de Linguagem Natural (PLN), o Voice Mate GPT oferece uma interação mais natural, fluida e intuitiva.
+**Voice Mate GPT** é um plugin inovador desenvolvido em TypeScript, especialmente projetado para aprimorar a experiência de chat na OpenAI e DeepSeek. Este plugin transforma a interação de chat, permitindo comunicação por voz com tecnologia avançada. Com a integração dos modelos GPT para Processamento de Linguagem Natural (PLN), o Voice Mate GPT oferece uma interação mais natural, fluida e intuitiva.
 
 ### Características
 
@@ -61,6 +62,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Integração com Modelos GPT
 - Personalização e Flexibilidade
 - Privacidade e Segurança
+- **Agora compatível com o DeepSeek, com recursos de reconhecimento de fala**
 
 ### Casos de Uso
 
